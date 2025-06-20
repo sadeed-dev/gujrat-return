@@ -8,7 +8,12 @@ import { useAuth } from '../context/auth/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate(); // Initialize navigate for routing
-  const { register, handleSubmit, formState: { errors }, isSubmitting ,reset} = useForm();
+const {
+  register,
+  handleSubmit,
+  reset,
+  formState: { errors, isSubmitting }
+} = useForm();
     const { user, setUser } = useAuth();
 
   // Handle form submission

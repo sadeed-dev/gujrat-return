@@ -12,7 +12,7 @@ import { Toaster } from 'sonner';
 // Admin Pages
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard"
 import LFAs from "./pages/admin/lfas/LFAs"
-import Task from "./pages/admin/Task/Task"
+import Task from "./pages/admin/task/Task"
 
 import ProtectedRoute from './components/ProtectedRoute';
 import TaskUpload from './pages/users-panel/TaskUpload';

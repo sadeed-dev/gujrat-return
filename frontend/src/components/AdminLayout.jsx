@@ -42,8 +42,8 @@ const AdminLayout = ({ children }) => {
     { name: "task", href: "/admin/task", icon: NotepadText, roles: ["ADMIN", "USER"] },
     // { name: "Upload Tasks", href: "/user/task-uploads", icon:CloudUpload, roles: ["ADMIN", "USER"] },
 
-    { name: "Customers", href: "/admin/customers", icon: Users, roles: ["ADMIN"] },
-    { name: "Requests", href: "/admin/requests", icon: FileText, roles: ["ADMIN"] , disabled: true },
+    // { name: "Customers", href: "/admin/customers", icon: Users, roles: ["ADMIN"] },
+    // { name: "Requests", href: "/admin/requests", icon: FileText, roles: ["ADMIN"] , disabled: true },
     { name: "Users", href: "/admin/users", icon: Shield, roles: ["ADMIN"] },
     { name:"Chat Rooms",href:'/admin/chat-rooms' ,icon: MessageSquare, },
     { icon: Settings, label: "Setting", id: "settings" },

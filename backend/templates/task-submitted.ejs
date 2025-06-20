@@ -1,0 +1,25 @@
+<h2>New Task Submission – LFA <%= lfaId %></h2>
+
+<p>Dear Admin,</p>
+
+<p>
+User <strong><%= userName %></strong> has submitted a new task for <strong>LFA ID: <%= lfaId %></strong>. Below are the task details:
+</p>
+
+<ul>
+  <li><strong>Title:</strong> <%= title %></li>
+  <li><strong>Description:</strong> <%= description %></l i>
+</ul>
+
+<% if (images && images.length) { %>
+  <p><strong>Attached Images:</strong></p>
+  <% images.forEach(function(img) { %>
+    <img src="<%= img %>" alt="Task Image" style="max-width:200px; max-height:200px; margin:5px; border:1px solid #ccc; border-radius:4px;" />
+  <% }); %>
+<% } %>
+
+<p>
+Please log in to the admin dashboard to review this submission in detail.
+</p>
+
+<p>Best regards,<br/>The Gujarat Network Team</p>

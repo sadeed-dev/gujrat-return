@@ -1,0 +1,24 @@
+<h2>New LFA Request Received</h2>
+
+<p>Dear Admin,</p>
+
+<p>
+A new LFA request has come from <strong><%= userName %></strong>. Below are the details of the request:
+</p>
+
+<ul>
+  <!-- <li><strong>User Name:</strong> <%= userName %></li>
+  <li><strong>Email:</strong> <%= userEmail %></li> -->
+  <li><strong>Mobile Number:</strong> <%= lfa.MobileNumber %></li>
+  <li><strong>LFA ID:</strong> <%= lfa.lfaId %></li>
+  <li><strong>Name:</strong> <%= lfa.name %></li>
+  <li><strong>District:</strong> <%= lfa.district %></li>
+  <li><strong>Tehsil:</strong> <%= lfa.tehsil %></li>
+  <li><strong>Interested Work:</strong> <%= lfa.interestedWork.join(', ') %></li>
+</ul>
+
+<p>
+Please log in to the admin dashboard to review and respond to this request.
+</p>
+
+<p>Best regards,<br/>The Gujarat Network Team</p>

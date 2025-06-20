@@ -1,0 +1,22 @@
+<h2>New LFA Assignment</h2>
+
+<p>Dear <%= userName %>,</p>
+
+<p>
+You have been assigned a new LFA request by <strong><%= assignedBy %></strong>. Below are the details of the assignment:
+</p>
+
+<ul>
+  <li><strong>LFA ID:</strong> <%= lfa.lfaId %></li>
+  <li><strong>Name:</strong> <%= lfa.name %></li>
+  <li><strong>Mobile Number:</strong> <%= lfa.mobileNumber %></li>
+  <li><strong>District:</strong> <%= lfa.district %></li>
+  <li><strong>Tehsil:</strong> <%= lfa.tehsil %></li>
+  <li><strong>Interested Work:</strong> <%= lfa.interestedWork.join(', ') %></li>
+</ul>
+
+<p>
+Please log in to your dashboard to review and take the necessary actions.
+</p>
+
+<p>Best regards,<br/>Your Team</p>

@@ -28,7 +28,7 @@ const DataTable = ({
   totalCount = 0,
   onPageChange,
   onRowsPerPageChange,
-  onEdit,
+    onEdit,
   onDelete,
   onStatusChange,
   onAssign,
@@ -164,101 +164,43 @@ const DataTable = ({
                 </TableCell>
               ))}
               
-         {user?.role === "ADMIN" && editDeleteBtn && (
-  <TableCell
-    align="center"
-    sx={{
-      backgroundColor: "oklch(85% 0.15 163.223)", // lighter variant
-      color: "white",
-      fontWeight: 600,
-      minWidth: 100,
-    }}
-  >
-    Actions
-  </TableCell>
-)}
+
 
             </TableRow>
           </TableHead>
+<TableBody>
+  {data?.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={columns.length} align="center">
+        <Typography variant="body1" color="text.secondary" py={4}>
+          No data available
+        </Typography>
+      </TableCell>
+    </TableRow>
+  ) : (
+    data?.map((row, index) => (
+      <TableRow
+        key={row.id || index}
+        hover
+        sx={{
+          "&:nth-of-type(odd)": {
+            backgroundColor: "#f9fafb",
+          },
+          "&:hover": {
+            backgroundColor: "#f0fdf4",
+          },
+        }}
+      >
+        {columns.map((column) => (
+          <TableCell key={column.field} align={column.align || "left"}>
+            {renderCellContent(column, row, index)}
+          </TableCell>
+        ))}
+      </TableRow>
+    ))
+  )}
+</TableBody>
 
-          <TableBody>
-            {data?.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={columns.length + 1} align="center">
-                  <Typography variant="body1" color="text.secondary" py={4}>
-                    No data available
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ) : (
-              data?.map((row, index) => (
-                <TableRow
-                  key={row.id || index}
-                  hover
-                  sx={{
-                    "&:nth-of-type(odd)": {
-                      backgroundColor: "#f9fafb",
-                    },
-                    "&:hover": {
-                      backgroundColor: "#f0fdf4",
-                    },
-                  }}
-                >
-                  {columns.map((column) => (
-                    <TableCell key={column.field} align={column.align || "left"}>
-                      {renderCellContent(column, row, index)}
-                    </TableCell>
-                  ))}
-
-
-     {
-      user?.role === "ADMIN" && (
-          (renderActions || onEdit || onDelete) && (
-                    <TableCell align="center">
-                      {renderActions ? (
-                        renderActions(row) // ✅ Use the custom action if passed
-                      ) : (
-                        <Box display="flex" justifyContent="center" gap={1}>
-                          <IconButton
-                            size="small"
-                            onClick={() => onEdit(row)}
-                            title="Edit"
-                            sx={{
-                              color: "#3b82f6",
-                              "&:hover": {
-                                backgroundColor: "#dbeafe",
-                                transform: "scale(1.1)",
-                              },
-                            }}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={() => onDelete(row)}
-                            title="Delete"
-                            sx={{
-                              color: "#ef4444",
-                              "&:hover": {
-                                backgroundColor: "#fee2e2",
-                                transform: "scale(1.1)",
-                              },
-                            }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Box>
-                      )}
-                    </TableCell>
-                  )
-      )
-     }
-                
-
-                </TableRow>
-              ))
-            )}
-          </TableBody>
         </Table>
       </TableContainer>
 

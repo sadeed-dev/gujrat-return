@@ -19,6 +19,7 @@ import {
   DialogActions,
   Button,
   Chip,
+  IconButton,
 } from "@mui/material"
 import LfaApplicationForm from '../../form/LfaApplicationForm'
 import { Search as SearchIcon, FilterList as FilterIcon } from "@mui/icons-material"
@@ -30,14 +31,16 @@ import { useGetAllLFAs, useAssignTo } from "../../../hook/use-Lfa.hook"
 import { useGetAllUsers } from "../../../hook/use-user.hook"
 import { useAuth } from "../../../context/auth/AuthContext"
 import { useLocation, useNavigate } from "react-router-dom"
-import { SendIcon } from "lucide-react"
+import { EditIcon, SendIcon } from "lucide-react"
 import SendOfferDialog from "./offfer-lfa/SendOfferDialog"
 import ChatRoomsPage from "./offfer-lfa/ChatRoomsPage"
 import axios from "axios"
 import { useCreateChatRoom, useGetAllRooms, useReactivateChatroom } from "../../../hook/use-lfachat.hook"
-import { Outlet } from 'react-router-dom';
-import ConfirmDialog from "./dialog-box/ConfirmDialog"
 
+import ConfirmDialog from "./dialog-box/ConfirmDialog"
+import DeleteIcon from '@mui/icons-material/Delete';
+
+import { Visibility as VisibilityIcon } from "@mui/icons-material"
 
 const MainPage = () => {
 
@@ -56,6 +59,7 @@ const MainPage = () => {
   const { data: allChatRooms } = useGetAllRooms()
 
   const nonDeletedChatRoom = allChatRooms?.filter(room => !room.isDeleted) || [];
+
   // const lfaIdsWithChatRoom = new Set((allChatRooms || []).map(room => room.lfaId));
 
   // isLfaOfferd = allChatRooms
@@ -107,6 +111,8 @@ const MainPage = () => {
 
   const [deletedChatRooms, setDeletedChatRooms] = useState([])
 
+  const [formDialog, setFormDialog] = useState({ open: false, mode: "edit", row: null });
+
   useEffect(() => {
     axios.get("http://localhost:5000/api/chat/all-rooms", {
       headers: { Authorization: `Bearer ${user?.token}` }
@@ -141,6 +147,11 @@ const MainPage = () => {
 
   const handleDisclose = (row) => {
     setDiscloseDialog({ open: true, row: row }); // Save the row for later use
+  }
+
+  const handleView = (row) => {
+    const originalRow = data.find(item => item._id === row._id) || row;
+    setFormDialog({ open: true, mode: "view", row: originalRow });
   }
 
   // Table columns configuration
@@ -181,7 +192,9 @@ const MainPage = () => {
     { field: "mobileNumber", headerName: "Mo. Number", minWidth: 150, align: "center" },
     { field: "aadhaarFile", headerName: "Aadhaar", type: "file", minWidth: 120, align: "center" },
     { field: "panFile", headerName: "PAN", type: "file", minWidth: 120, align: "center" },
-    { field: "bankDetail", headerName: "Bank Detail", minWidth: 130, align: "center" },
+    { field: "bankAccountNumber", headerName: "Account No", minWidth: 130, align: "center" },
+    { field: "ifscCode", headerName: "IFSC Code", minWidth: 130, align: "center" },
+
     { field: "state", headerName: "State", minWidth: 120, align: "center" },
     { field: "district", headerName: "District", minWidth: 120, align: "center" },
     { field: "tehsil", headerName: "Tehsil", minWidth: 120, align: "center" },
@@ -283,6 +296,71 @@ const MainPage = () => {
         align: "center"
       }]
       : []),
+
+
+
+    // ✅ New: Action column added directly inside columns
+    {
+      field: "actions",
+      headerName: "Actions",
+      minWidth: 140,
+      align: "center",
+      renderCell: ({ row }) => (
+        <Box display="flex" justifyContent="center" gap={1}>
+          <IconButton
+            size="small"
+            onClick={() => handleView(row)}
+            title="View"
+            sx={{
+              color: "#10b981", // Green/Emerald
+              backgroundColor: "#d1fae5", // Light green hover
+
+              "&:hover": {
+                backgroundColor: "#d1fae5", // Light green hover
+                transform: "scale(1.1)",
+              },
+            }}
+          >
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+          {/* View Button - Emerald tone */}
+          <IconButton
+            size="small"
+            onClick={() => handleEdit(row)}
+            title="Edit"
+            sx={{
+              color: "#3b82f6", // Blue
+              "&:hover": {
+                backgroundColor: "#dbeafe", // Light blue hover
+                transform: "scale(1.1)",
+              },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+
+
+          <IconButton
+            size="small"
+            onClick={() => handleDelete(row)}
+            title="Delete"
+            sx={{
+              color: "#ef4444",
+
+              "&:hover": {
+                backgroundColor: "#fee2e2",
+                transform: "scale(1.1)",
+              },
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
+    }
+
+    // ...existing code...
+
   ];
 
   const handleAssign = (row) => {
@@ -367,10 +445,9 @@ const MainPage = () => {
   const navigate = useNavigate()
   const handleEdit = (row) => {
     const originalRow = data.find(item => item._id === row._id) || row;
-    setEditOpen(true);
-    setEditRow(originalRow);
-    // navigate("")
+    setFormDialog({ open: true, mode: "edit", row: originalRow });
   };
+
 
   const handleDelete = (row) => {
     setSnackbar({
@@ -608,13 +685,33 @@ const MainPage = () => {
             />
 
             {/* Edit Form Dialog */}
-            <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="md" fullWidth>
+            {/* <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="md" fullWidth>
               <DialogContent>
                 <LfaApplicationForm
                   defaultValues={editRow}
                   onClose={() => setEditOpen(false)}
                   isEditForm={true}
                 // You can add an onSubmit prop to handle update logic
+                />
+              </DialogContent>
+            </Dialog> */}
+
+
+            <Dialog
+              open={formDialog.open}
+              onClose={() => setFormDialog({ open: false, mode: "edit", row: null })}
+              maxWidth="md"
+              fullWidth
+            >
+              <DialogTitle sx={{ color: "#16a34a", fontWeight: 600 }}>
+                {formDialog.mode === "view" ? "View LFA Details" : "Edit LFA Application Form"}
+              </DialogTitle>
+              <DialogContent>
+                <LfaApplicationForm
+                  defaultValues={formDialog.row}
+                  isEditForm={formDialog.mode === "edit"}
+                  isViewOnly={formDialog.mode === "view"}
+                  onClose={() => setFormDialog({ open: false, mode: "edit", row: null })}
                 />
               </DialogContent>
             </Dialog>

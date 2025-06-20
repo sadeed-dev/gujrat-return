@@ -67,10 +67,10 @@ const navigate = useNavigate();
   // Handle form submission
 
   const onSubmit = async (data) => {
-    // if (!emailVerified) {
-    //   toast.error("Please verify your email before registering.");
-    //   return;
-    // }
+    if (!emailVerified) {
+      toast.error("Please verify your email before registering.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append('name', data.name);

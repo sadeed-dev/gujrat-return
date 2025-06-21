@@ -20,6 +20,8 @@ import AllUsers from './pages/users/AllUsers';
 import { useAuth } from './context/auth/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import LfaApplicationForm from './pages/form/LfaApplicationForm';
+import LFAFormDialog from './pages/admin/lfas/LfaViewDialog';
+import LfaViewDialog from './pages/admin/lfas/LfaViewDialog';
 // // // Lazy-loaded pages
 
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -39,7 +41,7 @@ const ChatRoom = lazy(() => import('./pages/admin/lfas/offfer-lfa/ChatRoom'))
 
 function App() {
     const { user } = useAuth();
-
+  
   return (
         <NotificationProvider user={user}>
 
@@ -56,12 +58,12 @@ function App() {
               element={<AdminDashboard />
               } />
 
-            <Route
-              path="/admin/lfas"
-              element={ <LFAs />
-              } />
+           <Route path="/admin/lfas" element={<LFAs />}>
+        <Route path=":id" element={<LfaViewDialog />} />
+         </Route>
                   <Route path="/admin/lfas/chatroom/:roomId" element={<ChatRoom />} />
 
+                  <Route path="/admin/lfas/view/:lfaId" element={<ChatRoom />} />
 
               
             <Route

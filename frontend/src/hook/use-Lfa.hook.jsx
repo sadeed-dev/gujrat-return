@@ -13,6 +13,15 @@ export const useGetAllLFAs = () => {
 };
 
 
+export const useGetLFAs = (lfaId) => {
+  return useFetch({
+    queryKey: ['lfa-by-id'],
+    api: `lfa/${lfaId}`,
+    auth: true,
+    backend: true,
+  });
+};
+
 export const useGetAssignedLFAs = () => {
   return useFetch({
     queryKey: ['assign-lfa-list'],

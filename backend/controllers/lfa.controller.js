@@ -33,7 +33,7 @@ export const getAllLFA = async (req, res) => {
 
 export const getLFA = async (req, res) => {
   try {
-    const result = await handleGetLFA()
+    const result = await handleGetLFA(req.params.id)
     res.status(200).json(result);
 
   } catch (error) {

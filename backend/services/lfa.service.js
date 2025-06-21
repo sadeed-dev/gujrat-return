@@ -197,8 +197,8 @@ export const handleGetAllLFA = async (role, userId) => {
 };
 
 
-export const handleGetLFA = async () => {
-  return await LFA.findById({id})
+export const handleGetLFA = async (id) => {
+  return await LFA.findById(id)
 }
 
 

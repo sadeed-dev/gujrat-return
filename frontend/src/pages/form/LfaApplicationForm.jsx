@@ -17,6 +17,8 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
     defaultValues
   });
 
+  
+
   const queryClient = useQueryClient();
   const { user } = useAuth()
   const selectedState = watch('state')
@@ -82,12 +84,13 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
   const panFile = watch("panFile")?.[0];
   const aadhaarFile = watch("aadhaarFile")?.[0];
 
-  useEffect(() => {
-    if (defaultValues) {
-      setValue("aadhaarFileUrl", defaultValues.aadhaarFile);
-      setValue("panFileUrl", defaultValues.panFile);
-    }
-  }, [defaultValues, setValue]);
+useEffect(() => {
+  if (defaultValues) {
+    reset(defaultValues); 
+    setValue("aadhaarFileUrl", defaultValues.aadhaarFile);
+    setValue("panFileUrl", defaultValues.panFile);
+  }
+}, [defaultValues, reset, setValue]);
 
   const isFile = (file) => file instanceof File;
 
@@ -111,13 +114,13 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
   };
 
   return (
-    <section ref={ref} className="py-12 bg-white">
+    <section ref={ref} className=" bg-white">
       <div className="max-w-2xl mx-auto  sm:px-6 lg:px-8 shadow-lg rounded-lg " style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
         <h2 className="text-2xl font-bold text-emerald-700 mb-6 text-center">
-          {isEditForm ? 'Edit LFA Application Form' : isViewOnly ? 'LFA Application Form' : 'LFA Application Form'}
+          {isEditForm ? 'Edit LFA Application Form' : isViewOnly ? 'View LFA Application Form' : 'LFA Application Form'}
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {(isEditForm || isViewOnly) && (
+  
             <div>
               <label className="block font-medium mb-1">LFa ID</label>
               <input
@@ -129,7 +132,7 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
                 readOnly
               />
             </div>
-          )}
+        
           <div>
             <label className="block font-medium mb-1">Full Name</label>
             <input

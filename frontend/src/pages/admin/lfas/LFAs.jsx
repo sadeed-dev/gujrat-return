@@ -39,6 +39,7 @@ import { useCreateChatRoom, useGetAllRooms, useReactivateChatroom } from "../../
 
 import ConfirmDialog from "./dialog-box/ConfirmDialog"
 import DeleteIcon from '@mui/icons-material/Delete';
+import { Outlet } from "react-router-dom";
 
 import { Visibility as VisibilityIcon } from "@mui/icons-material"
 
@@ -59,10 +60,6 @@ const MainPage = () => {
   const { data: allChatRooms } = useGetAllRooms()
 
   const nonDeletedChatRoom = allChatRooms?.filter(room => !room.isDeleted) || [];
-
-  // const lfaIdsWithChatRoom = new Set((allChatRooms || []).map(room => room.lfaId));
-
-  // isLfaOfferd = allChatRooms
 
 
 
@@ -111,7 +108,7 @@ const MainPage = () => {
 
   const [deletedChatRooms, setDeletedChatRooms] = useState([])
 
-  const [formDialog, setFormDialog] = useState({ open: false, mode: "edit", row: null });
+  const [formDialog, setFormDialog] = useState({ open: false, row: null });
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/chat/all-rooms", {
@@ -149,10 +146,10 @@ const MainPage = () => {
     setDiscloseDialog({ open: true, row: row }); // Save the row for later use
   }
 
+
   const handleView = (row) => {
-    const originalRow = data.find(item => item._id === row._id) || row;
-    setFormDialog({ open: true, mode: "view", row: originalRow });
-  }
+navigate(`/admin/lfas/${row._id}`);
+};
 
   // Table columns configuration
   const columns = [
@@ -445,7 +442,7 @@ const MainPage = () => {
   const navigate = useNavigate()
   const handleEdit = (row) => {
     const originalRow = data.find(item => item._id === row._id) || row;
-    setFormDialog({ open: true, mode: "edit", row: originalRow });
+    setFormDialog({ open: true, row: originalRow });
   };
 
 
@@ -684,34 +681,21 @@ const MainPage = () => {
               } : {}}
             />
 
-            {/* Edit Form Dialog */}
-            {/* <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="md" fullWidth>
-              <DialogContent>
-                <LfaApplicationForm
-                  defaultValues={editRow}
-                  onClose={() => setEditOpen(false)}
-                  isEditForm={true}
-                // You can add an onSubmit prop to handle update logic
-                />
-              </DialogContent>
-            </Dialog> */}
-
 
             <Dialog
               open={formDialog.open}
-              onClose={() => setFormDialog({ open: false, mode: "edit", row: null })}
+              onClose={() => setFormDialog({ open: false, row: null })}
               maxWidth="md"
               fullWidth
             >
               <DialogTitle sx={{ color: "#16a34a", fontWeight: 600 }}>
-                {formDialog.mode === "view" ? "View LFA Details" : "Edit LFA Application Form"}
+               
               </DialogTitle>
               <DialogContent>
                 <LfaApplicationForm
                   defaultValues={formDialog.row}
-                  isEditForm={formDialog.mode === "edit"}
-                  isViewOnly={formDialog.mode === "view"}
-                  onClose={() => setFormDialog({ open: false, mode: "edit", row: null })}
+                  isEditForm={true}
+                  onClose={() => setFormDialog({ open: false, row: null })}
                 />
               </DialogContent>
             </Dialog>
@@ -789,6 +773,9 @@ const MainPage = () => {
         />
 
       </Container>
+
+            <Outlet /> 
+
     </AdminLayout>
   )
 }

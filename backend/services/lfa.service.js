@@ -243,7 +243,7 @@ export const handleAssignedLFA = async (lfaId, assignedById, assignedToId) => {
     title: 'LFA Assigned',
     message: `You have been assigned a new LFA  ${updatedLFA.lfaId} request by ${assignedByUser.name}`,
     type: 'info',
-    redirectionURL: `/user/task`, // or wherever user sees their assigned LFAs
+    redirectionURL: `admin/task/view/${updatedLFA?._id}`, // or wherever user sees their assigned LFAs
     recipients: [assignedToUser._id],
   });
 

@@ -22,6 +22,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import LfaApplicationForm from './pages/form/LfaApplicationForm';
 import LFAFormDialog from './pages/admin/lfas/LfaViewDialog';
 import LfaViewDialog from './pages/admin/lfas/LfaViewDialog';
+import TaskViewDialog from './pages/admin/task/view/TaskViewDialog';
 // // // Lazy-loaded pages
 
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -40,77 +41,80 @@ const ChatRoom = lazy(() => import('./pages/admin/lfas/offfer-lfa/ChatRoom'))
 
 
 function App() {
-    const { user } = useAuth();
-  
+  const { user } = useAuth();
+
   return (
-        <NotificationProvider user={user}>
+    <NotificationProvider user={user}>
 
-    <Router>
-      <div className="app-container">
-        <Suspense fallback={<div>Loading...</div>}>
-              <Toaster position="top-center" richColors  />
+      <Router>
+        <div className="app-container">
+          <Suspense fallback={<div>Loading...</div>}>
+            <Toaster position="top-center" richColors />
 
-          <Routes>
+            <Routes>
 
-            {/* Protected Admin Routes */}
-            <Route
-              path="/admin"
-              element={<AdminDashboard />
-              } />
+              {/* Protected Admin Routes */}
+              <Route
+                path="/admin"
+                element={<AdminDashboard />
+                } />
 
-           <Route path="/admin/lfas" element={<LFAs />}>
-        <Route path=":id" element={<LfaViewDialog />} />
-         </Route>
-                  <Route path="/admin/lfas/chatroom/:roomId" element={<ChatRoom />} />
+              <Route path="/admin/lfas" element={<LFAs />}>
+                <Route path=":id" element={<LfaViewDialog />} />
+              </Route>
+              <Route path="/admin/lfas/chatroom/:roomId" element={<ChatRoom />} />
 
-                  <Route path="/admin/lfas/view/:lfaId" element={<ChatRoom />} />
-
-              
-            <Route
-              path="/admin/task"
-              element={ <Task />
-              } />
-
-                   <Route path="/admin/users" element={<AllUsers />} />
-                  {/* <Route path="/admin/chat-rooms" element={<ChatRoom />} /> */}
+              <Route path="/admin/lfas/view/:lfaId" element={<ChatRoom />} />
 
 
-            {/* Public Routes with Header/Footer */}
+              <Route
+                path="/admin/task"
+                element={<Task />
+                }>
+                <Route path="view/:id" element={<TaskViewDialog />} />
+              </Route>
 
-          <Route path="/user/task-uploads" element={<TaskUpload />} />
 
-            <Route
-              path="/*"
-              element={
-                <>
-                  <Navbar />
-                  <main>
-                    <Routes>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/lfa" element={<LFa />} />
+              <Route path="/admin/users" element={<AllUsers />} />
+              {/* <Route path="/admin/chat-rooms" element={<ChatRoom />} /> */}
 
-                      <Route path="/work-get-paid" element={<WorkGetPaid />} />
-                      <Route path="/gram-panchayat" element={<GramPanchayat />} />
-                      <Route path="/services" element={<Services />} />
-                      <Route path="/faq" element={<Faqs />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/register" element={<Register />} />
 
-                    </Routes>
-                    
-                  </main>
-                  <Footer />
-                </>
-              }
-            />
-          </Routes>
-        </Suspense>
-      </div>
-    </Router>
-        </NotificationProvider>
+              {/* Public Routes with Header/Footer */}
+
+              <Route path="/user/task-uploads" element={<TaskUpload />} />
+
+              <Route
+                path="/*"
+                element={
+                  <>
+                    <Navbar />
+                    <main>
+                      <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/lfa" element={<LFa />} />
+
+                        <Route path="/work-get-paid" element={<WorkGetPaid />} />
+                        <Route path="/gram-panchayat" element={<GramPanchayat />} />
+                        <Route path="/services" element={<Services />} />
+                        <Route path="/faq" element={<Faqs />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+
+                      </Routes>
+
+                    </main>
+                    <Footer />
+                  </>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </div>
+      </Router>
+    </NotificationProvider>
 
   );
 }

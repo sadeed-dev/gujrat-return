@@ -2,18 +2,29 @@ import React, { useMemo, useState } from 'react'
 import AdminLayout from '../../../components/AdminLayout'
 import DataTable from '../../../shared/DataTable'
 import { useGetAssignedLFAs, useUpdateLfaStatus } from '../../../hook/use-Lfa.hook'
-import { Container, Typography, Box, TextField, Grid, Chip } from '@mui/material'
+import { Container, Typography, Box, TextField, Grid, Chip, IconButton, Button, Tooltip } from '@mui/material'
 import StatusActions from './StatusActions'
-import MoreMenu from './MoreMenu'
+
 import { useAuth } from '../../../context/auth/AuthContext'
+import { DeleteIcon, EditIcon } from 'lucide-react'
+import { Visibility as VisibilityIcon } from "@mui/icons-material"
+import { Outlet, useNavigate } from 'react-router-dom'
+import TaskActionButton from './TaskActionButton'
+
 
 const Task = () => {
   // Fetch all assigned LFAs (for admin)
   const { data, isLoading } = useGetAssignedLFAs()
   console.log(data);
-  
-  const { mutate: updateLfaStatus } = useUpdateLfaStatus()
+  const naviagte = useNavigate()
  
+
+  const handleView = (row) => {
+    console.log("View row:", row)
+    naviagte(`/admin/task/view/${row._id}`)
+  }
+
+
   const {user}  = useAuth()
   // Search/filter state
   const [searchName, setSearchName] = useState("")
@@ -121,18 +132,44 @@ const columns = [
             },
           ]
         : []),
+{
+      field: "view",
+      headerName: "View",
+      minWidth: 140,
+      align: "center",
+      renderCell: ({ row }) => (
+        <Box display="flex" justifyContent="center" gap={1}>
+          <Tooltip title="View Task Details">
+          <IconButton
+           key={`actions-${row._id}`}
+            size="small"
+            onClick={() => handleView(row)}
+            title="View"
+            sx={{
+              color: "#10b981", // Green/Emerald
+              backgroundColor: "#d1fae5", // Light green hover
+
+              "&:hover": {
+                backgroundColor: "#d1fae5", // Light green hover
+                transform: "scale(1.1)",
+              },
+            }}
+          >
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+          </Tooltip>
+       
+        </Box>
+      ),
+    },
 
     
 {
-  field: "more",
-  headerName: "More",
-  minWidth: 120,
+  field: "taskAction",
+  headerName: "Task",
+  minWidth: 160,
   align: "center",
-  renderCell: ({ row }) => (
-    <>
-      <MoreMenu row={row} />
-    </>
-  )
+  renderCell: ({ row }) => <TaskActionButton row={row} />,
 }
 
 ];
@@ -210,6 +247,7 @@ const columns = [
           editDelteBtn={false}
         />
       </Container>
+      <Outlet />
     </AdminLayout>
   )
 }

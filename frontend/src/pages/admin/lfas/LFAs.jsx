@@ -20,6 +20,7 @@ import {
   Button,
   Chip,
   IconButton,
+  Tooltip,
 } from "@mui/material"
 import LfaApplicationForm from '../../form/LfaApplicationForm'
 import { Search as SearchIcon, FilterList as FilterIcon } from "@mui/icons-material"
@@ -297,64 +298,66 @@ navigate(`/admin/lfas/${row._id}`);
 
 
     // ✅ New: Action column added directly inside columns
-    {
-      field: "actions",
-      headerName: "Actions",
-      minWidth: 140,
-      align: "center",
-      renderCell: ({ row }) => (
-        <Box display="flex" justifyContent="center" gap={1}>
-          <IconButton
-            size="small"
-            onClick={() => handleView(row)}
-            title="View"
-            sx={{
-              color: "#10b981", // Green/Emerald
-              backgroundColor: "#d1fae5", // Light green hover
 
-              "&:hover": {
-                backgroundColor: "#d1fae5", // Light green hover
-                transform: "scale(1.1)",
-              },
-            }}
-          >
-            <VisibilityIcon fontSize="small" />
-          </IconButton>
-          {/* View Button - Emerald tone */}
-          <IconButton
-            size="small"
-            onClick={() => handleEdit(row)}
-            title="Edit"
-            sx={{
-              color: "#3b82f6", // Blue
-              "&:hover": {
-                backgroundColor: "#dbeafe", // Light blue hover
-                transform: "scale(1.1)",
-              },
-            }}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
+{
+  field: "actions",
+  headerName: "Actions",
+  minWidth: 140,
+  align: "center",
+  renderCell: ({ row }) => (
+    <Box display="flex" justifyContent="center" gap={1}>
+      <Tooltip title="View" arrow>
+        <IconButton
+          size="small"
+          onClick={() => handleView(row)}
+          sx={{
+            color: "#10b981",
+            backgroundColor: "#d1fae5",
+            "&:hover": {
+              backgroundColor: "#bbf7d0",
+              transform: "scale(1.1)",
+            },
+          }}
+        >
+          <VisibilityIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
 
+      <Tooltip title="Edit" arrow>
+        <IconButton
+          size="small"
+          onClick={() => handleEdit(row)}
+          sx={{
+            color: "#3b82f6",
+            "&:hover": {
+              backgroundColor: "#dbeafe",
+              transform: "scale(1.1)",
+            },
+          }}
+        >
+          <EditIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
 
-          <IconButton
-            size="small"
-            onClick={() => handleDelete(row)}
-            title="Delete"
-            sx={{
-              color: "#ef4444",
+      <Tooltip title="Delete" arrow>
+        <IconButton
+          size="small"
+          onClick={() => handleDelete(row)}
+          sx={{
+            color: "#ef4444",
+            "&:hover": {
+              backgroundColor: "#fee2e2",
+              transform: "scale(1.1)",
+            },
+          }}
+        >
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  ),
+}
 
-              "&:hover": {
-                backgroundColor: "#fee2e2",
-                transform: "scale(1.1)",
-              },
-            }}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      ),
-    }
 
     // ...existing code...
 

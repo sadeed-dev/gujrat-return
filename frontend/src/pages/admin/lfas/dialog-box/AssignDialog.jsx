@@ -252,12 +252,17 @@ const users = usersList?.data.filter((user) => user.role !== "ADMIN") || [];
 
             {/* Other users */}
             {otherUsers.length > 0 && [
+                 <Typography
+                key="matching-label"
+                sx={{ px: 2, pt: 1, color: "#64748b", fontWeight: 600, fontSize: 13 }}
+              >
+                Users in diffrent region
+              </Typography>,
               matchingUsers.length === 0 && (
                 <Typography
                   key="other-label"
                   sx={{ px: 2, pt: 1, color: "#64748b", fontWeight: 600, fontSize: 13 }}
                 >
-                  Other Users
                 </Typography>
               ),
               ...otherUsers.map(user => (

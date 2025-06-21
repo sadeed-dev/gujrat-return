@@ -43,7 +43,7 @@ const newEntry = new Task({
       title: 'Task Submitted',
       message: `A ${lfa?.assignment?.assignedTo?.name} has submitted a task for LFA ${(lfaId)}`,
       type: 'info',
-      redirectionURL: `/admin/tasks/${savedTask._id}`,
+      redirectionURL: `/admin/tasks/view/${savedTask._id}`,
       recipients: [adminId],
     });
 

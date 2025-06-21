@@ -109,34 +109,70 @@ const DataTable = ({
         )
 
 
-      case "assign":
-        return row.assignedUserName ? (
-          <Chip
-            label={row.assignedUserName}
-            sx={{
-              backgroundColor: "#f0fdf4",
-              color: "#16a34a",
-              fontWeight: 600,
-              fontSize: "0.95rem",
-            }}
-          />
-        ) : (
-          <Button
-            variant="contained"
-            size="small"
-            sx={{
-              backgroundColor: "#16a34a",
-              color: "white",
-              fontWeight: 600,
-              borderRadius: "9999px",
-              textTransform: "none",
-              "&:hover": { backgroundColor: "#15803d" },
-            }}
-            onClick={() => onAssign(row)}
-          >
-            Assign To
-          </Button>
-        );
+case "assign":
+  return row.assignedUserName ? (
+    <Box
+      sx={{
+        position: "relative",
+        display: "inline-flex",
+        alignItems: "center",
+        "&:hover .edit-icon": { opacity: 1 },
+      }}
+    >
+      <Chip
+        variant="outlined"
+        label={row.assignedUserName}
+        sx={{
+          borderColor: "#16a34a",
+          color: "#16a34a",
+          fontWeight: 500,
+          fontSize: "0.9rem",
+          borderRadius: "9999px",
+          px: 1.5,
+        }}
+      />
+      <IconButton
+        size="small"
+        className="edit-icon"
+        onClick={() => onAssign(row)}
+        sx={{
+          position: "absolute",
+          top: -6,
+          right: -6,
+          p: "2px",
+          backgroundColor: "#ffffff",
+          border: "1px solid #d1d5db",
+          boxShadow: 1,
+          opacity: 0,
+          transition: "opacity 0.2s",
+        }}
+      >
+        <EditIcon fontSize="inherit" />
+      </IconButton>
+    </Box>
+  ) : (
+   <Button
+  variant="contained" // use 'outlined' instead of 'contained'
+  size="small"
+  sx={{
+    backgroundColor: "#f0fdf4",      // light green bg
+    borderColor: "#16a34a",          // green border
+    color: "#16a34a",                // matching text
+    borderRadius: "9999px",
+    textTransform: "none",
+    "&:hover": {
+      backgroundColor: "#dcfce7",    // slightly deeper green on hover
+      borderColor: "#15803d",        // darker border
+      color: "#15803d",              // darker text
+    },
+  }}
+  onClick={() => onAssign(row)}
+>
+  Assign To
+</Button>
+
+  )
+
       default:
         return <Typography variant="body2">{value || "-"}</Typography>
     }

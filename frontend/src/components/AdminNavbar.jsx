@@ -25,9 +25,10 @@ import { Tooltip } from '@mui/material';
 import React from "react"
 import { useAuth } from "../context/auth/AuthContext"
 import NotificationBell from "./notification/NotificationBell"
-import LiveLocationSender from "../components/LiveLocationSender";
-// C:\Users\pc\Desktop\gujrat-website\frontend\src\components\LiveLocationSender.jsx
-const AdminLayout = ({ children }) => {
+import LiveLocationSender from "./LiveLocationSender";
+
+
+const AdminNavbar = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const { user, setUser } = useAuth()
@@ -37,16 +38,15 @@ const AdminLayout = ({ children }) => {
 
   // Navigation array with roles specified
   const navigation = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard, roles: ["ADMIN"] },
+    { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
     { name: "LFAs", href: "/admin/lfas", icon: UserCheck, roles: ["ADMIN", "USER"] },
     { name: "task", href: "/admin/task", icon: NotepadText, roles: ["ADMIN", "USER"] },
     // { name: "Upload Tasks", href: "/user/task-uploads", icon:CloudUpload, roles: ["ADMIN", "USER"] },
 
     // { name: "Customers", href: "/admin/customers", icon: Users, roles: ["ADMIN"] },
     // { name: "Requests", href: "/admin/requests", icon: FileText, roles: ["ADMIN"] , disabled: true },
-    { name: "Users", href: "/admin/users", icon: Shield, roles: ["ADMIN"] },
-    { name:"Chat Rooms",href:'/admin/chat-rooms' ,icon: MessageSquare, },
-    { icon: Settings, label: "Setting", id: "settings" },
+       { name: "Users", href: "/admin/users", icon: Shield, roles: ["ADMIN"] },
+        {name: "Setting", href:"/admin/setting", icon: Settings, roles: ["ADMIN", "USER"]},
         {name: "home", href:"/", icon: Home, roles: ["ADMIN", "USER"]},
 
   ];
@@ -97,6 +97,7 @@ const isActive = (href) => {
             </div>
             <nav className="mt-5 space-y-1 px-2">
               {navigation.map((item,i) => (
+                
                 <Link
                   key={i}
                   to={item.href}
@@ -237,4 +238,4 @@ const isActive = (href) => {
   )
 }
 
-export default AdminLayout
+export default AdminNavbar

@@ -26,7 +26,7 @@ import LfaApplicationForm from '../../form/LfaApplicationForm'
 import { Search as SearchIcon, FilterList as FilterIcon } from "@mui/icons-material"
 import TableDisplay from "../../../shared/DataTable"
 import React from 'react'
-import AdminLayout from "../../../components/AdminLayout"
+import AdminLayout from "../../../components/AdminNavbar"
 import AssignDialog from "./dialog-box/AssignDialog"
 import { useGetAllLFAs, useAssignTo } from "../../../hook/use-Lfa.hook"
 import { useGetAllUsers } from "../../../hook/use-user.hook"

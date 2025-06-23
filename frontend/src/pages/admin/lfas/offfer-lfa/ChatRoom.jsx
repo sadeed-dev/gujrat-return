@@ -21,7 +21,7 @@ import { useGetAllUsers } from "../../../../hook/use-user.hook";
 import socket from "../../../../socket/socket";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-import AdminLayout from "../../../../components/AdminLayout";
+import AdminLayout from "../../../../components/AdminNavbar";
 import { IconButton, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import ConfirmDialog from "../dialog-box/ConfirmDialog";
 const ChatRoom = () => {

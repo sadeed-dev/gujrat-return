@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import AdminLayout from '../../../components/AdminLayout'
+import AdminLayout from '../../../components/AdminNavbar'
 import DataTable from '../../../shared/DataTable'
 import { useGetAssignedLFAs, useUpdateLfaStatus } from '../../../hook/use-Lfa.hook'
 import { Container, Typography, Box, TextField, Grid, Chip, IconButton, Button, Tooltip } from '@mui/material'
@@ -166,7 +166,7 @@ const columns = [
     
 {
   field: "taskAction",
-  headerName: "Task",
+  headerName: "Submitted Task",
   minWidth: 160,
   align: "center",
   renderCell: ({ row }) => <TaskActionButton row={row} />,

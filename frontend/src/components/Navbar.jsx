@@ -51,7 +51,7 @@ const Navbar = () => {
     if (!user) return;
 
     if (user.role === "ADMIN") {
-      navigate("/admin");
+      navigate("/admin/dashBoard");
     } else if (user.role === "USER") {
       navigate("/admin/lfas");
     } else {

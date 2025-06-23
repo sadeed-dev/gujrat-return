@@ -1,26 +1,24 @@
 import React, { useState } from "react";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../components/AdminNavbar";
 import DataTable from "../../shared/DataTable";
-import { Dialog, DialogContent, DialogTitle, Snackbar, Alert, Chip } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, } from "@mui/material";
 import UserEditForm from "./UserEditForm";
 import { useGetAllUsers, useUpdateUser, useDeleteUser, useUpdateUserStatus } from '../../hook/use-user.hook';
 import { useAuth } from "../../context/auth/AuthContext";
-import StatusActions from "../admin/task/StatusActions";
+import { getUserColumns } from "./columns/UserColumns";
 
 const AllUsers = () => {
   const { data, isLoading } = useGetAllUsers();
   // const {data: updateUser} = useUpdateUser();
 
-  const { mutate: updateUser, isLoading: isUpdating } = useUpdateUser();
+  const { mutateAsync: updateUser, isLoading: isUpdating } = useUpdateUser();
 
-  const { mutate: deleteUser } = useDeleteUser();
-  const { mutate } = useUpdateUserStatus();
+  const { mutateAsync: deleteUser } = useDeleteUser();
 
 
   const { user } = useAuth()
   const [editOpen, setEditOpen] = useState(false);
   const [editRow, setEditRow] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
   const handleEdit = (row) => {
     setEditRow(row);
@@ -28,16 +26,11 @@ const AllUsers = () => {
   };
 
   const handleDelete = (row) => {
-    try {
       deleteUser({ id: row._id });
-      setSnackbar({ open: true, message: "User deleted successfully", severity: "success" });
-    } catch (err) {
-      setSnackbar({ open: true, message: "Failed to delete user", severity: "error" });
-    }
+  
   }
 
   const onSubmit = async (data) => {
-
     try {
       const formData = new FormData();
       if (data.aadhaarFile?.length) {
@@ -122,66 +115,12 @@ const AllUsers = () => {
   };
 
 
-  const columns = [
-    { field: "serial", headerName: "S.No.", type: "serial", minWidth: 40, align: "center" },
-    { field: "name", headerName: "Full Name", minWidth: 150, align: "center" },
-    { field: "email", headerName: "Email", minWidth: 180, align: "center" },
-    {
-      field: "role", headerName: "Role", minWidth: 100, align: "center",
-      renderCell: (params) =>
-        params.row?.role && (
-          <Chip
-            label={params.row?.role}
-            size="small"
-            sx={{
-              backgroundColor:
-                params.row?.role === "ADMIN"
-                  ? "oklch(75% 0.25 30)" // red for admin
-                  : "oklch(75% 0.145 163.225)", // green for user
-              color: "#fff",
-              fontWeight: "bold",
-            }}
-          />
-
-        ),
-    },
-
-
-    { field: "state", headerName: "State", minWidth: 120, align: "center" },
-    { field: "district", headerName: "District", minWidth: 120, align: "center" },
-    { field: "tehsil", headerName: "Tehsil", minWidth: 120, align: "center" },
-    ...(user?.role === "ADMIN"
-      ? [
-        {
-          field: "isApproved",
-          headerName: "Approved",
-          minWidth: 120,
-          align: "center",
-          renderCell: ({ row }) => (
-
-            <StatusActions
-              row={{
-                ...row,
-                status: row.status || 'pending', // or use isApproved if needed
-              }}
-              useUpdateHook={useUpdateUserStatus} // or any other hook you use
-              dialogText={{
-                approveTitle: "Approve User",
-                approveContent: "Are you sure to approve this user?",
-                rejectTitle: "Reject User",
-                rejectContent: "Are you sure to reject this user?",
-              }}
-            />
-          )
-        }
-
-      ]
-      : []),
-
-
-
-  ];
-
+  const columns = getUserColumns({
+    user,
+    handleEdit,
+    handleDelete,
+    useUpdateUserStatus
+  });
 
   return (
     <AdminLayout>
@@ -210,13 +149,6 @@ const AllUsers = () => {
         </DialogContent>
       </Dialog>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={3000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert severity={snackbar.severity}>{snackbar.message}</Alert>
-      </Snackbar>
     </AdminLayout>
   );
 };

@@ -3,9 +3,9 @@ import React, { Suspense } from "react";
 import { Users, UserCheck, TrendingUp, FileText, CheckCircle } from "lucide-react"; // Icons can stay as-is
 import { useAuth } from "../../../context/auth/AuthContext";
 import { useGetLfaStatistics } from "../../../hook/use-dashboard.hook";
+import AdminNavbar from "../../../components/AdminNavbar";
 
 // Lazy load heavy components
-const AdminLayout = React.lazy(() => import("../../../components/AdminLayout"));
 const LfaChart = React.lazy(() => import("../LfaChart"));
 const LocationDashboard = React.lazy(() => import("./LocationDashboard"));
 const LiveLocationSender = React.lazy(() => import("../../../components/LiveLocationSender"));
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
   const { user } = useAuth()
 
   return (
-    <AdminLayout>
+    <AdminNavbar>
       <div className="space-y-6">
         {/* Page header */}
         <div>
@@ -167,7 +167,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </AdminNavbar>
   )
 }
 

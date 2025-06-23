@@ -141,3 +141,24 @@ export const useRegisterUser = () => {
     errorMessage: 'Registration failed!',
   });
 };
+
+
+
+export const useChangePassword = () => {
+  const queryClient = useQueryClient();
+
+  return useMutate({
+    mutationKey: ['change-password'],
+    api: () => '/auth/change-password',
+    method: 'POST',
+    notify: true,
+    getBody: (data) => data, // send data as-is
+    pendingMessage: 'Changing password...',
+    successMessage: 'Password changed successfully!',
+    errorMessage: 'Failed to change password.',
+    auth: true,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+    },
+  });
+};

@@ -146,3 +146,27 @@ export const handleVerifyOtp = async (email, otp) => {
 
   await Otp.deleteMany({ email });
 };
+
+
+// services/user.service.js
+
+
+export const handleChangePassword= async (userId, currentPassword, newPassword, confirmPassword) => {
+  if (newPassword !== confirmPassword) {
+    throw new Error("Passwords do not match");
+  }
+
+  const user = await User.findById(userId);
+  if (!user || !(await user.comparePassword(currentPassword))) {
+    throw new Error("Current password is incorrect");
+  }
+
+  // Direct hashing without external utility
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  user.password = hashedPassword;
+  await user.save();
+
+  return true;
+};

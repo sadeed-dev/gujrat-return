@@ -1,5 +1,5 @@
 // controllers/auth.controller.js
-import { register, loginUser,handleVerifyOtp, handleSendOtp } from '../services/auth.service.js';
+import { register, loginUser,handleVerifyOtp, handleSendOtp,handleChangePassword } from '../services/auth.service.js';
 import { sendNotificationToAdmins } from '../sockets/index.js';
 
 export const handleRegister = async (req, res) => {
@@ -55,6 +55,19 @@ export const verifyOtp = async (req, res) => {
 };
 
 
+
+export const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    await handleChangePassword(userId, currentPassword, newPassword, confirmPassword);
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
 
 
 

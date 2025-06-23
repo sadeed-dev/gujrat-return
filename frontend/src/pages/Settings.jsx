@@ -16,6 +16,9 @@ import {
   InputAdornment,
   IconButton,
   InputLabel,
+  Paper,
+  FormControl,
+  Select,
 } from "@mui/material"
 import {
   Edit as EditIcon,
@@ -29,8 +32,10 @@ import {
   Upload,
 } from "@mui/icons-material"
 import AdminNavbar from "../components/AdminNavbar"
-import { useGetUser } from "../hook/use-user.hook"
+import { useGetUser, useUpdateUser } from "../hook/use-user.hook"
 import { useAuth } from "../context/auth/AuthContext"
+import { states } from "../data/states-data"
+import {  UploadFile } from "@mui/icons-material";
 
 const Settings = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -53,10 +58,12 @@ console.log("User Data in Settings:", userData)
   } = useForm()
 
 
-  const stateOptions = ["Karnataka", "Maharashtra", "Gujarat", "Tamil Nadu", "Kerala"]
-  const districtOptions = ["Bengaluru Urban", "Mumbai", "Ahmedabad", "Chennai", "Kochi"]
-  const tehsilOptions = ["Bangalore South", "Andheri", "Sanand", "T. Nagar", "Fort Kochi"]
+  const selectedState = watch("state");
+  const selectedDistrict = watch("district");
 
+  const districts = states && states?.find((s) => s.name === selectedState)?.districts || [];
+  const tehsils = districts.find((d) => d.name === selectedDistrict)?.tehsils || [];
+  const { mutateAsync: updateUser, isLoading: isUpdating } = useUpdateUser();
 
  
   
@@ -126,31 +133,40 @@ useEffect(() => {
     }
   }
 
-  const onSubmit = (data) => {
-    console.log("Submitted form data:", data)
-    setValue("isEditing", false)
-  }
+  const onSubmit = async(data) => {
+    const formData = new FormData();
 
-  const InfoSection = ({ title, icon, children }) => (
-    <Card elevation={0} sx={{ border: "1px solid #e5e7eb", borderRadius: 2, mb: 3 }}>
-      <CardContent sx={{ p: 3 }}>
-        <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <Box sx={{ color: "#16a34a" }}>{icon}</Box>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: "#374151" }}>
-            {title}
-          </Typography>
-        </Box>
-        {children}
-      </CardContent>
-    </Card>
-  )
+    // Append files if selected
+    if (data.aadhaarFile?.length) {
+      formData.append("aadhaarFile", data.aadhaarFile[0]);
+    }
+    if (data.panFile?.length) {
+      formData.append("panFile", data.panFile[0]);
+    }
 
-  if (isLoading) return <p className="p-4 text-gray-500">Loading user data...</p>
-  if (error) return <p className="p-4 text-red-500">Failed to load user data.</p>
+    // Append other fields
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("state", data.state);
+    formData.append("district", data.district);
+    formData.append("tehsil", data.tehsil);
+
+    try {
+      await updateUser({ id: editRow._id, data: formData }); // Ensure this accepts FormData
+      setEditOpen(false);
+    } catch (err) {
+      console.error("Update failed:", err);
+    }
+  };
+
+  
+
+ // if (isLoading) return <p className="p-4 text-gray-500">Loading user data...</p>
+//  if (error) return <p className="p-4 text-red-500">Failed to load user data.</p>
 
   return (
     <AdminNavbar>
-      <Container maxWidth="lg" sx={{ py: 4, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
+      <div sx={{ py: 4, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
           <Box display="flex" alignItems="center" gap={3}>
             <Avatar sx={{ width: 80, height: 80, backgroundColor: "#16a34a", fontSize: "2rem", fontWeight: 700 }}>
@@ -168,269 +184,319 @@ useEffect(() => {
       
         </Box>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={3}>
-            {/* Personal Info */}
-            <Grid item xs={12} md={6}>
-              <InfoSection title="Personal Information" icon={<Person />}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <Controller
-                      name="name"
-                      control={control}
-                      rules={{ required: "Name is required" }}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="Full Name"
-                          fullWidth
-                          error={!!errors.name}
-                          helperText={errors.name?.message}
-                        />
-                      )}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Controller
-                      name="email"
-                      control={control}
-                      rules={{
-                        required: "Email is required",
-                        pattern: {
-                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Enter a valid email",
-                        },
-                      }}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="Email"
-                          fullWidth
-                          error={!!errors.email}
-                          helperText={errors.email?.message}
-                        />
-                      )}
-                    />
-                  </Grid>
-                </Grid>
-              </InfoSection>
-            </Grid>
 
-            {/* Location Info */}
-            <Grid item xs={12} md={6}>
-              <InfoSection title="Location Details" icon={<LocationOn />}>
-                <Grid container spacing={2}>
-                  {["state", "district", "tehsil"].map((fieldName) => (
-                    <Grid item xs={12} key={fieldName}>
-                      <Controller
-                        name={fieldName}
-                        control={control}
-                        rules={{ required: `${fieldName} is required` }}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            select
-                            label={fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}
-                            fullWidth
-                            error={!!errors[fieldName]}
-                            helperText={errors[fieldName]?.message}
-                          >
-                            {(fieldName === "state"
-                              ? stateOptions
-                              : fieldName === "district"
-                              ? districtOptions
-                              : tehsilOptions
-                            ).map((option) => (
-                              <MenuItem key={option} value={option}>
-                                {option}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-                        )}
-                      />
-                    </Grid>
+<form onSubmit={handleSubmit(onSubmit)}>
+  <Paper elevation={3} sx={{ p: 4, bgcolor: "#f9f9f9", borderRadius: 2, mb:4 }}>
+    <Typography variant="h6" gutterBottom>
+      User Information
+    </Typography>
+
+    {/* Row: Personal Info + Location Details */}
+    <Grid container spacing={2} sx={{ mb: 3 }}>
+      {/* Personal Information */}
+      <Grid item xs={6} md={6}>
+        <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
+          <Typography variant="subtitle1" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Person fontSize="small" /> Personal Information
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: "Name is required" }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Full Name"
+                    fullWidth
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Enter a valid email",
+                  },
+                }}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Email"
+                    fullWidth
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                  />
+                )}
+              />
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid>
+
+      {/* Location Details */}
+    <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
+      <Typography variant="subtitle1" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <LocationOn fontSize="small" /> Location Details
+      </Typography>
+      <Grid spacing={2} sx={{display:'flex',gap:2}}>
+        <Grid item>
+          <Controller
+            name="state"
+            control={control}
+            defaultValue={userData?.state || ""}
+            rules={{ required: "State is required" }}
+            render={({ field }) => (
+              <FormControl sx={{ width: "11rem" }} error={!!errors.state}>
+                <InputLabel>State</InputLabel>
+                <Select
+                  label="State"
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setValue("district", "");
+                    setValue("tehsil", "");
+                  }}
+                >
+                  {states?.map((state) => (
+                    <MenuItem key={state.name} value={state.name}>
+                      {state.name}
+                    </MenuItem>
                   ))}
-                </Grid>
-              </InfoSection>
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item>
+          <Controller
+            name="district"
+            control={control}
+            defaultValue={userData?.district || ""}
+            rules={{ required: "District is required" }}
+            render={({ field }) => (
+              <FormControl sx={{ width: "11rem" }} error={!!errors.district}>
+                <InputLabel>District</InputLabel>
+                <Select
+                  label="District"
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setValue("tehsil", "");
+                  }}
+                  disabled={!selectedState}
+                >
+                  {districts.map((district) => (
+                    <MenuItem key={district.name} value={district.name}>
+                      {district.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Grid>
+
+        <Grid item>
+          <Controller
+            name="tehsil"
+            control={control}
+            defaultValue={userData?.tehsil || ""}
+            rules={{ required: "Tehsil is required" }}
+            render={({ field }) => (
+              <FormControl sx={{ width: "11rem" }} error={!!errors.tehsil}>
+                <InputLabel>Tehsil</InputLabel>
+                <Select
+                  label="Tehsil"
+                  {...field}
+                  disabled={!selectedDistrict}
+                >
+                  {tehsils.map((tehsil) => (
+                    <MenuItem key={tehsil} value={tehsil}>
+                      {tehsil}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Grid>
+      </Grid>
+
+    </Paper>
+
+    </Grid>
+
+    {/* Document Upload Section - Half Width Centered */}
+    <Grid container justifyContent="left" sx={{ mb: 3 }}>
+      <Grid item xs={12} md={6}>
+        <Paper variant="outlined" sx={{ p: 2 }}>
+          <Typography variant="subtitle1" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <UploadFile fontSize="small" /> Document Upload
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Aadhaar File</InputLabel>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("aadhaarFile")}
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              {aadhaarPreview && (
+                <a href={aadhaarPreview} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={aadhaarPreview}
+                    alt="Aadhaar Preview"
+                    style={{
+                      width: "250px",
+                      height: "150px",
+                      objectFit: "contain",
+                      marginTop: "0.5rem",
+                      borderRadius: "0.5rem",
+                      display: "block",
+                    }}
+                  />
+                </a>
+              )}
             </Grid>
 
-            {/* Document Uploads */}
-            {/* <Grid item xs={12}>
-              <InfoSection title="Document Information" icon={<Upload />}>
-                        <Grid item xs={6}>
-                              <InputLabel>Aadhaar File</InputLabel>
-                              <input type="file" accept="image/*" {...register("aadhaarFile")}
-                                className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                              />
-                
-                              {aadhaarPreview && (
-                                <a href={aadhaarPreview} target="_blank" rel="noopener noreferrer">
-                
-                                  <img
-                                    src={aadhaarPreview}
-                                    alt="Aadhaar Preview"
-                                    style={{
-                                      width: "150px",
-                                      height: "150px",
-                                      objectFit: "contain",
-                                      marginBottom: "0.5rem",
-                                      borderRadius: "0.5rem",
-                                      display: "block",
-                                    }}
-                                  />
-                                </a>
-                
-                              )}
-                            </Grid>
-                
-                            <Grid item xs={6}>
-                              <InputLabel >PAN File</InputLabel>
-                              <input type="file" accept="image/*" {...register("panFile")}
-                                className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              
-                              />
-                
-                              {panPreview && (
-                                <a href={panPreview} target="_blank" rel="noopener noreferrer">
-                
-                                  <img
-                                    src={panPreview}
-                                    alt="PAN Preview"
-                                    style={{
-                                      width: "150px",
-                                      height: "150px",
-                                      objectFit: "contain",
-                                      marginBottom: "0.5rem",
-                                      borderRadius: "0.5rem",
-                                      display: "block",
-                                    }}
-                                  />
-                                </a>
-                
-                              )}
-                            </Grid>
-              </InfoSection>
-            </Grid> */}
+            <Grid item xs={12} sm={6}>
+              <InputLabel>PAN File</InputLabel>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("panFile")}
+                className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              />
+              {panPreview && (
+                <a href={panPreview} target="_blank" rel="noopener noreferrer">
+                  <img
+                    src={panPreview}
+                    alt="PAN Preview"
+                    style={{
+                      width: "250px",
+                      height: "150px",
+                      objectFit: "contain",
+                      marginTop: "0.5rem",
+                      borderRadius: "0.5rem",
+                      display: "block",
+                    }}
+                  />
+                </a>
+              )}
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid>
+    </Grid>
 
+    {/* Save Button Bottom-Right */}
+    <Box mt={3} display="flex" justifyContent="flex-end">
+      <Button type="submit" variant="contained" color="primary">
+        Save Changes
+      </Button>
+    </Box>
+  </Paper>
+</form>
+
+
+
+            
+
+    {/* Password Fields */}
  <Grid item xs={12}>
-            
-                    <Grid item xs={12}>
-                      <Grid container spacing={2} alignItems="center" wrap="nowrap">
-                        <Grid item xs={6}>
-                          <InputLabel>Aadhaar File</InputLabel>
-                          <input type="file" accept="image/*" {...register("aadhaarFile")}
-                            className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                          />
-            
-                          {aadhaarPreview && (
-                            <a href={aadhaarPreview} target="_blank" rel="noopener noreferrer">
-            
-                              <img
-                                src={aadhaarPreview}
-                                alt="Aadhaar Preview"
-                                style={{
-                                  width: "150px",
-                                  height: "150px",
-                                  objectFit: "contain",
-                                  marginBottom: "0.5rem",
-                                  borderRadius: "0.5rem",
-                                  display: "block",
-                                }}
-                              />
-                            </a>
-            
-                          )}
-                        </Grid>
-            
-                        <Grid item xs={6}>
-                          <InputLabel >PAN File</InputLabel>
-                          <input type="file" accept="image/*" {...register("panFile")}
-                            className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            
-                          />
-            
-                          {panPreview && (
-                            <a href={panPreview} target="_blank" rel="noopener noreferrer">
-            
-                              <img
-                                src={panPreview}
-                                alt="PAN Preview"
-                                style={{
-                                  width: "150px",
-                                  height: "150px",
-                                  objectFit: "contain",
-                                  marginBottom: "0.5rem",
-                                  borderRadius: "0.5rem",
-                                  display: "block",
-                                }}
-                              />
-                            </a>
-            
-                          )}
-                        </Grid>
-                      </Grid>
-                    </Grid>
-            </Grid>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Paper
+          variant="outlined"
+          sx={{ p: 3, bgcolor: "#fdfdfd", borderRadius: 2 }}
+        >
+          <Typography
+            variant="subtitle1"
+            gutterBottom
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
+            <Security fontSize="small" /> Change Password
+          </Typography>
 
-            
-
-            {/* Password Change */}
-              <Grid item xs={12}>
-                <InfoSection title="Change Password" icon={<Security />}>
-                  <Grid container spacing={2}>
-                    {["currentPassword", "newPassword", "confirmPassword"].map((name, i) => (
-                      <Grid item xs={12} md={4} key={name}>
-                        <Controller
-                          name={name}
-                          control={control}
-                          render={({ field }) => (
-                            <TextField
-                              {...field}
-                              label={name.replace(/([a-z])([A-Z])/g, "$1 $2")}
-                              type={showPassword ? "text" : "password"}
-                              fullWidth
-                              InputProps={{
-                                endAdornment:
-                                  i === 0 ? (
-                                    <InputAdornment position="end">
-                                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                                      </IconButton>
-                                    </InputAdornment>
-                                  ) : null,
-                              }}
-                            />
-                          )}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </InfoSection>
-              </Grid>
+          {/* Password Fields */}
+          <Grid container spacing={2} mb={2}>
+            {(["currentPassword", "newPassword", "confirmPassword"]).map(
+              (name) => (
+                <Grid item xs={12} md={4} key={name}>
+                  <Controller
+                    name={name}
+                    control={control}
+                    rules={{
+                      required: "This field is required",
+                      // you can add more rules here (minLength, validate matching, etc.)
+                    }}
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        {...field}
+                        label={name
+                          .replace(/([a-z])([A-Z])/g, "$1 $2")
+                          .replace(/^./, (s) => s.toUpperCase())}
+                        type={showPassword ? "text" : "password"}
+                        fullWidth
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <IconButton
+                                onClick={() => setShowPassword((v) => !v)}
+                                edge="end"
+                              >
+                                {showPassword ? (
+                                  <VisibilityOff />
+                                ) : (
+                                  <Visibility />
+                                )}
+                              </IconButton>
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              )
+            )}
           </Grid>
 
-          {/* Actions */}
-            <Box display="flex" justifyContent="flex-end" gap={2} mt={4}>
-              <Button onClick={handleCancel} startIcon={<CancelIcon />}>
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                startIcon={<SaveIcon />}
-                disabled={!isDirty}
-                sx={{
-                  backgroundColor: "#16a34a",
-                  color: "#fff",
-                  "&:hover": { backgroundColor: "#15803d" },
-                  "&:disabled": { backgroundColor: "#e5e7eb", color: "#9ca3af" },
-                }}
-              >
-                Save Changes
-              </Button>
-            </Box>
-        
-        </form>
-      </Container>
+          {/* Button Bottom-Left */}
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              type="submit"
+              startIcon={<SaveIcon />}
+              disabled={!isDirty}
+              sx={{
+                backgroundColor: "#16a34a",
+                color: "#fff",
+                "&:hover": { backgroundColor: "#15803d" },
+                "&:disabled": { backgroundColor: "#e5e7eb", color: "#9ca3af" },
+              }}
+            >
+              Save Changes
+            </Button>
+          </Box>
+        </Paper>
+      </form>
+    </Grid>
+
+
+        {/* </form> */}
+      </div>
     </AdminNavbar>
   )
 }

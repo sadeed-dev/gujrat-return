@@ -33,7 +33,7 @@ export default function LfaViewDialog() {
 
   
   return (
-          <Dialog open={open} onClose={handleClose}  maxWidth="sm" fullWidth>
+          <Dialog open={open} onClose={handleClose}  maxWidth="md" fullWidth>
     
     
       <DialogContent>

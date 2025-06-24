@@ -81,7 +81,7 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
     }
   };
 
-  
+
   const panFile = watch("panFile")?.[0];
   const aadhaarFile = watch("aadhaarFile")?.[0];
 
@@ -131,21 +131,20 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
   
-  {
-    isEditForm && isViewOnly (
-        <div>
-              <label className="block font-medium mb-1">LFa ID</label>
-              <input
-                {...register("lfaId")}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                type="text"
-                value={defaultValues ? defaultValues.lfaId : defaultValues?.lfaId}
-                disabled
-                readOnly
-              />
-            </div>
-    )
-  }
+{(isEditForm || isViewOnly) && (
+  <div>
+    <label className="block font-medium mb-1">LFa ID</label>
+    <input
+      {...register("lfaId")}
+      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      type="text"
+      value={defaultValues?.lfaId || ''}
+      disabled
+      readOnly
+    />
+  </div>
+)}
+
           
         
           <div>

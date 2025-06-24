@@ -12,6 +12,9 @@
 
 
 
+html {
+  scroll-behavior: smooth;
+}
 
 .custom-avatar-marker img {
   width: 100%;

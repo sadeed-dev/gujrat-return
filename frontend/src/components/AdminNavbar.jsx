@@ -4,7 +4,7 @@ import { useState } from "react"
 import { href, Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import {
   LayoutDashboard,
-  Users,
+ 
   UserCheck,
   FileText,
   Shield,
@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   Bell,
+  Users ,
   CloudUpload,
   Search,
   LogOut,
@@ -40,12 +41,12 @@ const AdminNavbar = () => {
   const navigation = [
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, roles: ["ADMIN"] },
     { name: "LFAs", href: "/admin/lfas", icon: UserCheck, roles: ["ADMIN", "USER"] },
-    { name: "task", href: "/admin/task", icon: NotepadText, roles: ["ADMIN", "USER"] },
+    { name: "Task", href: "/admin/task", icon: NotepadText, roles: ["ADMIN", "USER"] },
     // { name: "Upload Tasks", href: "/user/task-uploads", icon:CloudUpload, roles: ["ADMIN", "USER"] },
 
     // { name: "Customers", href: "/admin/customers", icon: Users, roles: ["ADMIN"] },
     // { name: "Requests", href: "/admin/requests", icon: FileText, roles: ["ADMIN"] , disabled: true },
-       { name: "Users", href: "/admin/users", icon: Shield, roles: ["ADMIN"] },
+       { name: "Users", href: "/admin/users", icon: Users, roles: ["ADMIN"] },
         {name: "Setting", href:"/admin/setting", icon: Settings, roles: ["ADMIN", "USER"]},
         {name: "Home", href:"/", icon: Home, roles: ["ADMIN", "USER"]},
 

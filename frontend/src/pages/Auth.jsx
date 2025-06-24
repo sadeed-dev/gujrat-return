@@ -102,7 +102,7 @@ const selectedDistrict = watch("district");
     </div>
 
     <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="">
         {/* For login, email and password fields with half-width */}
         {isLogin ? (
           <div className="grid grid-cols-2 gap-6"> {/* Two columns for email and password */}

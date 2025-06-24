@@ -53,18 +53,18 @@ const WorkGetPaid = () => {
                 a difference. 
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to="/contact"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-emerald-700 bg-white hover:bg-emerald-50"
-                >
-                  Find Opportunities
-                </Link>
                 <a
+  href="#opportunities"
+  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-emerald-700 bg-white hover:bg-emerald-50"
+>
+  Find Opportunities
+</a>
+                {/* <a
                   href="#opportunities"
                   className="inline-flex items-center justify-center px-6 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-emerald-700/50"
                 >
                   View Job Types
-                </a>
+                </a> */}
               </div>
             </div>
             {/* <div className="mt-10 md:mt-0 md:w-1/2">

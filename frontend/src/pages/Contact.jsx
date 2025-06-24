@@ -269,7 +269,7 @@ const Contact = () => {
                 <p className="text-gray-700 mb-4">
                   Interested in working with us? We're always looking for passionate individuals to join our mission.
                 </p>
-                <Link
+                {/* <Link
                   to="/careers"
                   className="inline-flex items-center text-[oklch(0.7_0.15_160deg)] font-medium hover:text-[oklch(0.6_0.15_160deg)]"
                 >
@@ -287,7 +287,7 @@ const Contact = () => {
                       clipRule="evenodd"
                     />
                   </svg>
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>
@@ -381,12 +381,12 @@ const Contact = () => {
             >
               Register Your Village
             </Link>
-            <Link
+            {/* <Link
               to="/donate"
               className="inline-flex items-center justify-center px-6 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-[oklch(0.65_0.15_160deg)/50]"
             >
               Support Our Work
-            </Link>
+            </Link> */}
           </div>
         </div>
       </section>

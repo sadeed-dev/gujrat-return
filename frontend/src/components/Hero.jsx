@@ -27,13 +27,13 @@ const Hero = () => {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4">
             <Link
-              to="/about"
+              to="/lfa"
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-emerald-700 bg-white hover:bg-emerald-50 transition-colors"
             >
             Join Now 
             </Link>
             <Link
-              to="/contact"
+              to="/work-get-paid"
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-800 bg-opacity-60 hover:bg-opacity-70 transition-colors"
             >
              Work & Get Paid<ArrowRight className="ml-2 h-5 w-5" />

@@ -81,6 +81,7 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
     }
   };
 
+  
   const panFile = watch("panFile")?.[0];
   const aadhaarFile = watch("aadhaarFile")?.[0];
 
@@ -130,7 +131,9 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
   
-            <div>
+  {
+    isEditForm && isViewOnly (
+        <div>
               <label className="block font-medium mb-1">LFa ID</label>
               <input
                 {...register("lfaId")}
@@ -141,6 +144,9 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
                 readOnly
               />
             </div>
+    )
+  }
+          
         
           <div>
             <label className="block font-medium mb-1">Full Name</label>
@@ -337,7 +343,7 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
             {!isEditForm && !isViewOnly && (
               <button
                 type="button"
-                className="text-gray-500 hover:text-emerald-600 cursor-pointer"
+                className="text-gray-500 hover:text-emerald-600 cursor-pointer ml-8"
                 onClick={() => reset()}
               >
                 Reset

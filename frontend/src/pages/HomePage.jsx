@@ -352,9 +352,7 @@ const HomePage = () => {
                 <p className="text-gray-600 mb-4">
                   Our newest skill development center will serve 5 districts and train over 1,000 youth annually.
                 </p>
-                <a href="#" className="text-emerald-600 font-medium hover:text-emerald-700">
-                  Read more
-                </a>
+               
               </div>
             </div>
 
@@ -366,9 +364,7 @@ const HomePage = () => {
                 <p className="text-gray-600 mb-4">
                   New collaboration will bring modern farming techniques and resources to 200 villages.
                 </p>
-                <a href="#" className="text-emerald-600 font-medium hover:text-emerald-700">
-                  Read more
-                </a>
+               
               </div>
             </div>
 
@@ -380,18 +376,16 @@ const HomePage = () => {
                 <p className="text-gray-600 mb-4">
                   Our initiative has now trained over 50,000 rural residents in basic digital skills.
                 </p>
-                <a href="#" className="text-emerald-600 font-medium hover:text-emerald-700">
-                  Read more
-                </a>
+               
               </div>
             </div>
           </div>
 
-          <div className="mt-12 text-center">
+          {/* <div className="mt-12 text-center">
             <a href="#" className="inline-flex items-center text-emerald-600 font-medium hover:text-emerald-700">
               View all updates <ArrowRight className="ml-2 h-4 w-4" />
             </a>
-          </div>
+          </div> */}
         </div>
       </section>
     </div>

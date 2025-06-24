@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Settings } from 'lucide-react';
-
+import ScrollToTop from '../shared/ScrollToTop'
 const HomePage = React.lazy(() => import('../pages/HomePage'));
 const About = React.lazy(() => import('../pages/About'));
 const LFa = React.lazy(() => import('../pages/LFa'));
@@ -21,6 +21,8 @@ const PublicRoutes = () => {
   return (
     <>
       <Navbar />
+            <ScrollToTop /> 
+
       <main>
         <Routes>
           <Route path="/" element={<HomePage />} />

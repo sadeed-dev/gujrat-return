@@ -434,14 +434,14 @@ const Services = () => {
                   </div>
                 ))}
               </div>
-              <div className="mt-6">
+              {/* <div className="mt-6">
                 <Link
                   to="/innovations"
                   className="inline-flex items-center justify-center px-5 py-3 border  border-transparent  font-medium rounded-md text-white bg-[oklch(0.7_0.15_160deg)] hover:bg-[oklch(0.65_0.15_160deg)] mb-10"
                 >
                   Explore Innovations
                 </Link>
-              </div>
+              </div> */}
             </div>
             <div className="mb-10 lg:mb-0 order-1 lg:order-2">
               <img

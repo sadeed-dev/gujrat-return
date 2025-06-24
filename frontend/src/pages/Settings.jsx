@@ -191,7 +191,7 @@ const Settings = () => {
 
 
         <form onSubmit={handleProfileSubmit(onSubmit)}>
-          <Paper elevation={3} sx={{ p: 4, bgcolor: "#f9f9f9", borderRadius: 2, mb: 4 }}>
+          <Paper  sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 2, mb: 4 }}>
             <Typography variant="h6" gutterBottom>
               User Information
             </Typography>
@@ -200,7 +200,7 @@ const Settings = () => {
             <Grid container spacing={2} sx={{ mb: 3 }}>
               {/* Personal Information */}
               <Grid item xs={6} md={6}>
-                <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
+                <Paper variant="outlined" sx={{ p: 1.5, height: '100%' }}>
                   <Typography variant="subtitle1" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Person fontSize="small" sx={{ color: "#23ba7d" }} />
                     Personal Information
@@ -249,11 +249,11 @@ const Settings = () => {
               </Grid>
 
               {/* Location Details */}
-              <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
+              <Paper variant="outlined" sx={{ p: 1.5, height: '100%' }}>
                 <Typography variant="subtitle1" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <LocationOn fontSize="small" sx={{ color: "#23ba7d" }} /> Location Details
                 </Typography>
-                <Grid spacing={2} sx={{ display: 'flex', gap: 2 }}>
+                <Grid spacing={2} sx={{ display: 'flex', gap: 1 }}>
                   <Grid item>
                     <Controller
                       name="state"
@@ -261,7 +261,7 @@ const Settings = () => {
                       defaultValue={userData?.state || ""}
                       rules={{ required: "State is required" }}
                       render={({ field }) => (
-                        <FormControl sx={{ width: "11rem" }} error={!!profileControl.state}>
+                        <FormControl sx={{ width: "9rem" }} error={!!profileControl.state}>
                           <InputLabel>State</InputLabel>
                           <Select
                             label="State"
@@ -290,7 +290,7 @@ const Settings = () => {
                       defaultValue={userData?.district || ""}
                       rules={{ required: "District is required" }}
                       render={({ field }) => (
-                        <FormControl sx={{ width: "11rem" }} error={!!profileErrors.district}>
+                        <FormControl sx={{ width: "9rem" }} error={!!profileErrors.district}>
                           <InputLabel>District</InputLabel>
                           <Select
                             label="District"
@@ -319,7 +319,7 @@ const Settings = () => {
                       defaultValue={userData?.tehsil || ""}
                       rules={{ required: "Tehsil is required" }}
                       render={({ field }) => (
-                        <FormControl sx={{ width: "11rem" }} error={!!profileErrors.tehsil}>
+                        <FormControl sx={{ width: "9rem" }} error={!!profileErrors.tehsil}>
                           <InputLabel>Tehsil</InputLabel>
                           <Select
                             label="Tehsil"

@@ -8,18 +8,18 @@ import { useUpdateAssignTask } from '../../../hook/use-task.hook';
 const user = JSON.parse(localStorage.getItem('user'))
 
 const TaskUploadForm = ({ row, taskData, onClose, isViewMode }) => {
-  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm({});
+  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } ,watch} = useForm({});
   const inputRef = useRef();
   const imagesRef = useRef([]); // For upload mode
 
     const [existingImages, setExistingImages] = useState([]);
 
+    console.log(row)
 
 const { mutate: updateTask, isLoading: isUpdating } = useUpdateAssignTask();
   // Extract task object if present
   const task = taskData?.data?.[0];
   
-
 
   // Pre-fill form fields
 useEffect(() => {
@@ -71,6 +71,8 @@ useEffect(() => {
     if (inputRef.current) inputRef.current.value = "";
   };
 
+
+
   // Submit handler (USER only)
 const onSubmit = async (data) => {
   try {
@@ -78,6 +80,7 @@ const onSubmit = async (data) => {
     formData.append("lfaId", data.lfaId);
     formData.append("title", data.title);
     formData.append("description", data.description);
+formData.append("interestedWork", JSON.stringify(data.interestedWork));
 
     if (imagesRef.current.length) {
       imagesRef.current.forEach(file => formData.append("images", file));
@@ -124,6 +127,22 @@ const onSubmit = async (data) => {
     toast.error(error.message);
   }
 };
+setValue("interestedWork", row?.interestedWork.split(" ") || []);
+
+
+const workArray = row?.interestedWork
+  ?.split(",")
+  .map(item => item.trim())
+  .filter(Boolean) || [];
+
+console.log(workArray); // ['Recovery', 'Startup', 'Property']
+
+
+useEffect(() => {
+  setValue("interestedWork", workArray);
+}, [workArray, setValue]);
+
+
   // Only USER can 
     const isEditable = user?.role === "USER";
 
@@ -143,6 +162,31 @@ const onSubmit = async (data) => {
               value={task ? task.lfaId : row?.lfaId}
               disabled
             />
+          </div>
+              <div className="">
+            <label className="block font-medium mb-2"> Work </label>
+<div className="flex flex-wrap gap-4">
+  {console.log(workArray)}
+  {workArray.map((option) => (
+    <label key={option} className="inline-flex items-center space-x-2">
+      <input
+        type="checkbox"
+        value={option}
+        {...register("interestedWork", {
+          required: "Please select at least one option",
+        })}
+        defaultChecked={true} // ✅ Pre-checked from `workArray`
+        className="form-checkbox h-5 w-5 text-emerald-600 border border-gray-300 rounded focus:ring-emerald-500"
+      />
+      <span className="text-gray-700">{option}</span>
+    </label>
+  ))}
+</div>
+
+
+
+
+            {errors.interestedWork && <span className="text-red-500 text-sm">{errors.interestedWork.message}</span>}
           </div>
           <div>
             <label className="block font-medium mb-1">Title</label>

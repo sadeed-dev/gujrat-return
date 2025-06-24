@@ -184,7 +184,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose , isViewOnly = false })
           <Controller
             name="district"
             control={control}
-            defaultValue={defaultValues.district || ""}
+            defaultValue={defaultValues?.district || ""}
             rules={{ required: "District is required" }}
             render={({ field }) => (
               <FormControl sx={{ width: "15rem" }} error={!!errors.district}>
@@ -215,7 +215,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose , isViewOnly = false })
           <Controller
             name="tehsil"
             control={control}
-            defaultValue={defaultValues.tehsil || ""}
+            defaultValue={defaultValues?.tehsil || ""}
             rules={{ required: "Tehsil is required" }}
             render={({ field }) => (
               <FormControl sx={{ width: "15rem" }} error={!!errors.tehsil}>

@@ -157,16 +157,19 @@ export const handleChangePassword= async (userId, currentPassword, newPassword, 
   }
 
   const user = await User.findById(userId);
-  if (!user || !(await user.comparePassword(currentPassword))) {
+
+  // 3. Check current password
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
     throw new Error("Current password is incorrect");
   }
 
   // Direct hashing without external utility
+ // 4. Hash new password and save
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-  user.password = hashedPassword;
+  user.password = await bcrypt.hash(newPassword, salt);
   await user.save();
+
 
   return true;
 };

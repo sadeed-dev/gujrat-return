@@ -59,7 +59,7 @@ export const verifyOtp = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = req?.body?.data;
 
     await handleChangePassword(userId, currentPassword, newPassword, confirmPassword);
 

@@ -85,7 +85,6 @@ const AdminDashboard = () => {
   const { user } = useAuth()
 
   return (
-    <AdminNavbar>
       <div className="space-y-6">
         {/* Page header */}
         <div>
@@ -167,7 +166,6 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
-    </AdminNavbar>
   )
 }
 

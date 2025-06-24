@@ -4,7 +4,7 @@ import { Visibility as VisibilityIcon } from "@mui/icons-material";
 import { EditIcon } from "lucide-react";
 import StatusActions from "../../admin/task/StatusActions";
 
-export  function getUserColumns({ user, handleEdit, handleDelete, useUpdateUserStatus }) {
+export  function getUserColumns({ user, handleEdit,handleView, handleDelete, useUpdateUserStatus }) {
   return [
     { field: "serial", headerName: "S.No.", type: "serial", minWidth: 40, align: "center" },
     { field: "name", headerName: "Full Name", minWidth: 150, align: "center" },
@@ -62,6 +62,22 @@ export  function getUserColumns({ user, handleEdit, handleDelete, useUpdateUserS
       align: "center",
       renderCell: ({ row }) => (
         <Box display="flex" justifyContent="center" gap={1}>
+            <Tooltip title="View" arrow>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleView(row)}
+                    sx={{
+                      color: "#10b981",
+                      backgroundColor: "#d1fae5",
+                      "&:hover": {
+                        backgroundColor: "#bbf7d0",
+                        transform: "scale(1.1)",
+                      },
+                    }}
+                  >
+                    <VisibilityIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
           <Tooltip title="Edit" arrow>
             <IconButton
               size="small"

@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from 'react'
-import AdminLayout from '../../../components/AdminNavbar'
 import DataTable from '../../../shared/DataTable'
 import { useGetAssignedLFAs, useUpdateLfaStatus } from '../../../hook/use-Lfa.hook'
 import { Container, Typography, Box, TextField, Grid, Chip, IconButton, Button, Tooltip } from '@mui/material'
@@ -10,17 +9,18 @@ import { DeleteIcon, EditIcon } from 'lucide-react'
 import { Visibility as VisibilityIcon } from "@mui/icons-material"
 import { Outlet, useNavigate } from 'react-router-dom'
 import TaskActionButton from './TaskActionButton'
+import TableSkeleton from '../../../shared/TableSkelton'
 
 
 const Task = () => {
   // Fetch all assigned LFAs (for admin)
   const { data, isLoading } = useGetAssignedLFAs()
-  console.log(data);
+
   const naviagte = useNavigate()
  
 
   const handleView = (row) => {
-    console.log("View row:", row)
+
     naviagte(`/admin/task/view/${row._id}`)
   }
 
@@ -144,7 +144,6 @@ const columns = [
            key={`actions-${row._id}`}
             size="small"
             onClick={() => handleView(row)}
-            title="View"
             sx={{
               color: "#10b981", // Green/Emerald
               backgroundColor: "#d1fae5", // Light green hover
@@ -204,8 +203,8 @@ const columns = [
   }, [filteredData, page, rowsPerPage])
 
   return (
-    <AdminLayout>
-      <Container maxWidth="xl" sx={{ backgroundColor: "#f9fafb", minHeight: "100vh" }}>
+    <>
+          <div maxWidth="xl" sx={{ backgroundColor: "#f9fafb", minHeight: "100vh" }}>
         <Box mb={3}>
           <Typography variant="h4" component="h1" fontWeight={500} sx={{ color: "#16a34a" }}>
             All Assigned LFA Tasks
@@ -233,6 +232,12 @@ const columns = [
             </Grid>
           </Grid>
         </Box>
+
+      {
+        isLoading ? (
+  <TableSkeleton columns={columns.length} rows={8} />
+
+        ): (
         <DataTable
           data={paginatedData}
           columns={columns}
@@ -246,9 +251,13 @@ const columns = [
           onAssign={() => { }}
           editDelteBtn={false}
         />
-      </Container>
+        )
+      }
+
+      </div>
       <Outlet />
-    </AdminLayout>
+    </>
+
   )
 }
 

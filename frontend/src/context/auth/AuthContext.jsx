@@ -3,17 +3,20 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Initialize from localStorage immediately to avoid empty render
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-
-  // Load from localStorage on mount
+  // Keep localStorage in sync when user changes
   useEffect(() => {
-const user = JSON.parse(localStorage.getItem("user"));
-
-   if(user){
-    setUser(user)
-   }
-  }, []);
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser }}>

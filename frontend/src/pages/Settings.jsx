@@ -171,7 +171,6 @@ const Settings = () => {
   //  if (error) return <p className="p-4 text-red-500">Failed to load user data.</p>
 
   return (
-    <AdminNavbar>
       <div sx={{ py: 4, backgroundColor: "#f9fafb", minHeight: "100vh" }}>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={4}>
           <Box display="flex" alignItems="center" gap={3}>
@@ -508,7 +507,6 @@ const Settings = () => {
           </form>
         </Grid>
       </div>
-    </AdminNavbar>
   )
 }
 

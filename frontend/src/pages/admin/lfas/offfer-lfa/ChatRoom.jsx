@@ -21,7 +21,6 @@ import { useGetAllUsers } from "../../../../hook/use-user.hook";
 import socket from "../../../../socket/socket";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-import AdminLayout from "../../../../components/AdminNavbar";
 import { IconButton, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import ConfirmDialog from "../dialog-box/ConfirmDialog";
 const ChatRoom = () => {
@@ -117,7 +116,7 @@ useEffect(() => {
   }
 
   return (
-          <AdminLayout>
+          <>
 
     <Box sx={{ p: 3 }}>
 <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
@@ -286,7 +285,7 @@ user?.role === "ADMIN" && (
   themeColor="#dc2626" // red to match destructive action
 />
         
-    </AdminLayout>
+    </>
   );
 };
 

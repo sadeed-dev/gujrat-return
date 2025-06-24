@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import AdminLayout from "../../components/AdminNavbar";
 import DataTable from "../../shared/DataTable";
 import { Dialog, DialogContent, DialogTitle, } from "@mui/material";
-import UserEditForm from "./UserEditForm";
+import UserEditForm from "./dialog/UserEditForm";
 import { useGetAllUsers, useUpdateUser, useDeleteUser, useUpdateUserStatus } from '../../hook/use-user.hook';
 import { useAuth } from "../../context/auth/AuthContext";
 import { getUserColumns } from "./columns/UserColumns";
+import TableSkeleton from "../../shared/TableSkelton";
+import { useNavigate } from "react-router-dom";
 
 const AllUsers = () => {
   const { data, isLoading } = useGetAllUsers();
@@ -19,6 +21,7 @@ const AllUsers = () => {
   const { user } = useAuth()
   const [editOpen, setEditOpen] = useState(false);
   const [editRow, setEditRow] = useState(null);
+  const navigate = useNavigate()
 
   const handleEdit = (row) => {
     setEditRow(row);
@@ -28,6 +31,9 @@ const AllUsers = () => {
   const handleDelete = (row) => {
       deleteUser({ id: row._id });
   
+  }
+  const handleView = (row) => {
+    navigate(`/admin/users/view/${row._id}`)
   }
 
   const onSubmit = async (data) => {
@@ -119,13 +125,21 @@ const AllUsers = () => {
     user,
     handleEdit,
     handleDelete,
+    handleView,
     useUpdateUserStatus
   });
 
   return (
-    <AdminLayout>
+    <>
+    
       <h2 className="text-2xl font-bold text-emerald-700 mb-6 text-center">All Registered Users</h2>
-      <DataTable
+
+      {
+        isLoading ? (
+  <TableSkeleton columns={columns.length} rows={8} />
+
+        ): (
+   <DataTable
         data={data?.data || []}
         columns={columns}
         page={0}
@@ -137,6 +151,9 @@ const AllUsers = () => {
         onDelete={handleDelete}
         editDeleteBtn={true}
       />
+        )
+      }
+   
 
       <Dialog open={editOpen} onClose={() => setEditOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Edit User</DialogTitle>
@@ -148,8 +165,8 @@ const AllUsers = () => {
           />
         </DialogContent>
       </Dialog>
+</>
 
-    </AdminLayout>
   );
 };
 

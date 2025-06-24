@@ -26,7 +26,6 @@ import LfaApplicationForm from '../../form/LfaApplicationForm'
 import { Search as SearchIcon, FilterList as FilterIcon } from "@mui/icons-material"
 import TableDisplay from "../../../shared/DataTable"
 import React from 'react'
-import AdminLayout from "../../../components/AdminNavbar"
 import AssignDialog from "./dialog-box/AssignDialog"
 import { useGetAllLFAs, useAssignTo } from "../../../hook/use-Lfa.hook"
 import { useGetAllUsers } from "../../../hook/use-user.hook"
@@ -43,6 +42,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Outlet } from "react-router-dom";
 
 import { Visibility as VisibilityIcon } from "@mui/icons-material"
+import TableSkeleton from "../../../shared/TableSkelton"
 
 const MainPage = () => {
 
@@ -149,7 +149,7 @@ const MainPage = () => {
 
 
   const handleView = (row) => {
-navigate(`/admin/lfas/${row._id}`);
+navigate(`/admin/lfas/view/${row._id}`);
 };
 
   // Table columns configuration
@@ -239,7 +239,7 @@ navigate(`/admin/lfas/${row._id}`);
           align: "center",
           renderCell: (params) => {
             // Find the chatroom for this LFA in allRooms
-            const chatRoom = allChatRooms.find(
+            const chatRoom = allChatRooms?.find(
               room => room.lfaId === params.row._id
             );
 
@@ -268,7 +268,7 @@ navigate(`/admin/lfas/${row._id}`);
                 size="small"
                 startIcon={<SendIcon />}
                 onClick={() => handleSendOffer(params.row)}
-                disabled={allChatRooms.some(room => room.lfaId === params.row._id && !room.isDeleted)}
+                disabled={allChatRooms?.some(room => room.lfaId === params.row._id && !room.isDeleted)}
                 sx={{
                   backgroundColor: "#3b82f6",
                   "&:hover": {
@@ -500,8 +500,8 @@ navigate(`/admin/lfas/${row._id}`);
 
 
   return (
-    <AdminLayout>
-      <Container
+    <>
+       <Container
         maxWidth={false}
         disableGutters
         sx={{ backgroundColor: "#f9fafb", minHeight: "100vh" }}
@@ -654,7 +654,12 @@ navigate(`/admin/lfas/${row._id}`);
             </Grid>
 
             {/* Table */}
-            <TableDisplay
+
+            {isLoading ? (
+                <TableSkeleton columns={columns?.length} rows={8} />
+
+            ): (
+   <TableDisplay
               data={paginatedData}
               columns={columns}
               page={page}
@@ -668,6 +673,8 @@ navigate(`/admin/lfas/${row._id}`);
               onAssign={handleAssign}
               editDeleteBtn={true}
             />
+            )}
+         
 
             {/* Assign Dialog */}
             <AssignDialog
@@ -778,8 +785,9 @@ navigate(`/admin/lfas/${row._id}`);
       </Container>
 
             <Outlet /> 
+    </>
+   
 
-    </AdminLayout>
   )
 }
 

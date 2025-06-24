@@ -126,11 +126,12 @@ const defaultAvatar = "https://www.gravatar.com/avatar/?d=mp";
 const createAvatarIcon = (url) =>
   L.divIcon({
     html: `<div class="custom-avatar-marker"><img src="${url}" /></div>`,
-    className: "",
+    className: "", // <- very important to leave this empty
     iconSize: [44, 44],
     iconAnchor: [22, 22],
     popupAnchor: [0, -22],
   });
+
 
 const LocationDashboard = ({ user }) => {
   const [users, setUsers] = useState([]);

@@ -56,7 +56,7 @@ export const states = [
 ];
 
 
-const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
+const UserEditForm = ({ defaultValues, onSubmit, onClose , isViewOnly = false }) => {
   const {
     register,
     handleSubmit,
@@ -117,6 +117,8 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
             {...register("name", { required: "Name is required" })}
             error={!!errors.name}
             helperText={errors.name?.message}
+              InputProps={{ readOnly: isViewOnly }}
+
           />
         </Grid>
 
@@ -127,6 +129,8 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
             {...register("email", { required: "Email is required" })}
             error={!!errors.email}
             helperText={errors.email?.message}
+              InputProps={{ readOnly: isViewOnly }}
+
           />
         </Grid>
 
@@ -135,8 +139,9 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
             <InputLabel>Role</InputLabel>
             <Select
               label="Role"
-              defaultValue={defaultValues.role || ""}
+              defaultValue={defaultValues?.role || ""}
               {...register("role", { required: "Role is required" })}
+              disabled={isViewOnly}
             >
               <MenuItem value="USER">User</MenuItem>
               <MenuItem value="ADMIN">Admin</MenuItem>
@@ -148,7 +153,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
           <Controller
             name="state"
             control={control}
-            defaultValue={defaultValues.state || ""}
+            defaultValue={defaultValues?.state || ""}
             rules={{ required: "State is required" }}
             render={({ field }) => (
               <FormControl sx={{ width: "15rem" }} error={!!errors.state}>
@@ -161,6 +166,8 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
                     setValue("district", "");
                     setValue("tehsil", "");
                   }}
+                    disabled={isViewOnly}
+
                 >
                   {states.map((state) => (
                     <MenuItem key={state.name} value={state.name}>
@@ -189,7 +196,9 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
                     field.onChange(e);
                     setValue("tehsil", "");
                   }}
-                  disabled={!selectedState}
+                  disabled={!selectedState || isViewOnly}
+
+                  
                 >
                   {districts.map((district) => (
                     <MenuItem key={district.name} value={district.name}>
@@ -214,7 +223,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
                 <Select
                   label="Tehsil"
                   {...field}
-                  disabled={!selectedDistrict}
+                  disabled={!selectedDistrict || isViewOnly}
                 >
                   {tehsils.map((tehsil) => (
                     <MenuItem key={tehsil} value={tehsil}>
@@ -234,7 +243,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
               <InputLabel>Aadhaar File</InputLabel>
               <input type="file" accept="image/*" {...register("aadhaarFile")}
                 className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              />
+                 disabled={isViewOnly}/>
 
               {aadhaarPreview && (
                 <a href={aadhaarPreview} target="_blank" rel="noopener noreferrer">
@@ -260,7 +269,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
               <InputLabel >PAN File</InputLabel>
               <input type="file" accept="image/*" {...register("panFile")}
                 className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-
+                disabled={isViewOnly}
               />
 
               {panPreview && (
@@ -286,19 +295,23 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose }) => {
         </Grid>
 
         {/* Action Buttons */}
-        <Grid item xs={12} sx={{ textAlign: "left" }}>
-          <Button onClick={onClose} variant="outlined" sx={{ mr: 2 }}>
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ background: "#16A34A" }}
-            disabled={isSubmitting}
-          >
-            Save
-          </Button>
-        </Grid>
+     <Grid item xs={12} sx={{ textAlign: "left" }}>
+  <Button onClick={onClose} variant="outlined" sx={{ mr: 2 }}>
+    {isViewOnly ? "Close" : "Cancel"}
+  </Button>
+
+  {!isViewOnly && (
+    <Button
+      type="submit"
+      variant="contained"
+      sx={{ background: "#16A34A" }}
+      disabled={isSubmitting}
+    >
+      Save
+    </Button>
+  )}
+</Grid>
+
       </Grid>
     </form>
   );

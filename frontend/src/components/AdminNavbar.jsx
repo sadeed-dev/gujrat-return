@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { href, Link, useLocation, useNavigate } from "react-router-dom"
+import { href, Link, Outlet, useLocation, useNavigate } from "react-router-dom"
 import {
   LayoutDashboard,
   Users,
@@ -28,7 +28,7 @@ import NotificationBell from "./notification/NotificationBell"
 import LiveLocationSender from "./LiveLocationSender";
 
 
-const AdminNavbar = ({ children }) => {
+const AdminNavbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
   const { user, setUser } = useAuth()
@@ -47,7 +47,7 @@ const AdminNavbar = ({ children }) => {
     // { name: "Requests", href: "/admin/requests", icon: FileText, roles: ["ADMIN"] , disabled: true },
        { name: "Users", href: "/admin/users", icon: Shield, roles: ["ADMIN"] },
         {name: "Setting", href:"/admin/setting", icon: Settings, roles: ["ADMIN", "USER"]},
-        {name: "home", href:"/", icon: Home, roles: ["ADMIN", "USER"]},
+        {name: "Home", href:"/", icon: Home, roles: ["ADMIN", "USER"]},
 
   ];
 
@@ -227,7 +227,9 @@ const isActive = (href) => {
 
         {/* Page content */}
         <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <Outlet />
+          </div>
         </main>
       </div>
 

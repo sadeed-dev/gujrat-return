@@ -84,13 +84,22 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
   const panFile = watch("panFile")?.[0];
   const aadhaarFile = watch("aadhaarFile")?.[0];
 
-useEffect(() => {
-  if (defaultValues) {
+  useEffect(() => {
+  if (defaultValues && defaultValues._id) {
     reset(defaultValues); 
     setValue("aadhaarFileUrl", defaultValues.aadhaarFile);
     setValue("panFileUrl", defaultValues.panFile);
   }
-}, [defaultValues, reset, setValue]);
+  // Only run once when component mounts or defaultValues change meaningfully
+}, [defaultValues?._id]);
+
+// useEffect(() => {
+//   if (defaultValues) {
+//     reset(defaultValues); 
+//     setValue("aadhaarFileUrl", defaultValues.aadhaarFile);
+//     setValue("panFileUrl", defaultValues.panFile);
+//   }
+// }, [defaultValues, reset, setValue]);
 
   const isFile = (file) => file instanceof File;
 

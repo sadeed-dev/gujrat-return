@@ -15,10 +15,9 @@ export default function LfaViewDialog() {
     const [formDialog, setFormDialog] = useState({ open: false, mode: "edit", row: null });
   
   const navigate = useNavigate();
-  const { id } = useParams();
+  const {lfaId} = useParams();
   const [open, setOpen] = useState(true);
-
-  const {data} = useGetLFAs(id);
+  const {data} = useGetLFAs(lfaId);
   console.log(data)
 
   const handleClose = () => {
@@ -28,15 +27,17 @@ export default function LfaViewDialog() {
 
   useEffect(() => {
     setOpen(true); 
-  }, [id]);
+  }, [lfaId]);
 
 
 
   
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+          <Dialog open={open} onClose={handleClose}  maxWidth="sm" fullWidth>
+    
+    
       <DialogContent>
-     <LfaApplicationForm id={id} onClose={handleClose}
+     <LfaApplicationForm id={lfaId} onClose={handleClose}
      defaultValues={data} isViewOnly={true} 
       />
       </DialogContent>

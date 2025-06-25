@@ -344,10 +344,10 @@ const onSubmit = async (data) => {
           </form>
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?
+              Already have an account? 
               <Link to="/login">
                 <span className="font-medium text-[oklch(0.7_0.15_160deg)] hover:text-[oklch(0.6_0.15_160deg)] cursor-pointer">
-                  Sign In
+                   {" "}Sign In
                 </span>
               </Link>
             </p>

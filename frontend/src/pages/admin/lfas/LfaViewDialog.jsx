@@ -18,7 +18,7 @@ export default function LfaViewDialog() {
   const {lfaId} = useParams();
   const [open, setOpen] = useState(true);
   const {data} = useGetLFAs(lfaId);
-  console.log(data)
+  console.log(lfaId)
 
   const handleClose = () => {
     setOpen(false);

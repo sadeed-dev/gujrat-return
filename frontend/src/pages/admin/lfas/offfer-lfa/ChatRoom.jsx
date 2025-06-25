@@ -167,7 +167,6 @@ user?.role === "ADMIN" && (
 
        <Box display="flex" gap={1} mb={2} flexWrap="wrap">
       {participantNames?.map((p, i) => (
-        console.log(participantNames),
         <Tooltip
           key={i}
           title={
@@ -176,7 +175,7 @@ user?.role === "ADMIN" && (
                 <Typography variant="body2"><strong>{p.name}</strong></Typography>
                 <Typography variant="caption">{p.email}</Typography>
               </Box>
-<IconButton size="small" onClick={() => copyToClipboard(p.email)} sx={{ color: '#ffffff' }}>
+  <IconButton size="small" onClick={() => copyToClipboard(p.email)} sx={{ color: '#ffffff' }}>
                 <ContentCopyIcon color="" fontSize="inherit" />
               </IconButton>
             </Box>
@@ -185,7 +184,12 @@ user?.role === "ADMIN" && (
           placement="top"
         >
 
-  <Chip label={p.name} color="primary" variant="outlined" clickable onClick={() => navigate(`/admin/users/view/${p._id}`)} />
+  <Chip label={p.name} color="primary" variant="outlined" clickable 
+  onClick={() => {
+    if (user.role === "ADMIN") {
+      navigate(`/admin/users/view/${p._id}`);
+    }
+  }}   />
 
 
         </Tooltip>

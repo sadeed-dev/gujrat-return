@@ -654,9 +654,8 @@ navigate(`/admin/lfas/view/${row._id}`);
             </Grid>
 
             {/* Table */}
-
             {isLoading ? (
-                <TableSkeleton columns={columns?.length} rows={8} />
+                <TableSkeleton columns={columns?.length} rows={paginatedData.length} />
 
             ): (
    <TableDisplay

@@ -95,8 +95,8 @@ const TaskViewDialog = () => {
       </DialogTitle>
 
       <DialogContent dividers>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+        <Grid sx={{display:'flex', gap:2}} spacing={1.5}>
+          <Grid item xs={1} md={6}>
             <Section title="Personal Information">
               <InfoItem icon={<Person fontSize="small" />} label="Name" value={taskData.name} />
               <InfoItem icon={<Phone fontSize="small" />} label="Mobile" value={taskData.mobileNumber} />

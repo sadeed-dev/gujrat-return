@@ -10,7 +10,7 @@ import {
   Skeleton,
 } from "@mui/material";
 
-const TableSkeleton = ({ columns = 6, rows = 5, cellHeight = 20,}) => {
+const TableSkeleton = ({ columns = 6, rows = 5, cellHeight = 10,}) => {
   return (
     <TableContainer component={Paper} sx={{ background: "#fff" }}>
       <Table>
@@ -31,7 +31,7 @@ const TableSkeleton = ({ columns = 6, rows = 5, cellHeight = 20,}) => {
                   <Skeleton
                     variant="rounded"
                     height={cellHeight}
-                    width={'4rem'}
+                    width={'5rem'}
                     sx={{ borderRadius: 1 }}
                   />
                 </TableCell>

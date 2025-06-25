@@ -151,7 +151,7 @@ import mongoose from 'mongoose';
       title: 'New LFA Application',
       message: `A new LFA application was submitted by ${name}`,
       type: 'info',
-      redirectionURL: `admin/lfas/${newLfa._id}`,
+      redirectionURL: `admin/lfas/view/${newLfa._id}`,
       recipients: adminIds,
     });
 

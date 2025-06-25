@@ -15,13 +15,7 @@ export const handleLogin = async (req, res) => {
   try {
     const result = await loginUser(req.body);
       // 2. Send test notification to admins
-    sendNotificationToAdmins({
-      title: 'User Logged In',
-      
-      message: `User  just logged in`,
-      type: 'info',
-      time: new Date(),
-    });
+
     res.status(200).json({ message: 'Login successful', ...result });
   } catch (error) {
     res.status(401).json({ error: error.message });

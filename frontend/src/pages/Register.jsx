@@ -64,33 +64,30 @@ const navigate = useNavigate();
 
 
 
-  // Handle form submission
+const onSubmit = async (data) => {
+  const formData = new FormData();
+  formData.append('name', data.name);
+  formData.append('email', data.email);
+  formData.append('state', data.state);
+  formData.append('district', data.district);
+  formData.append('tehsil', data.tehsil);
+  formData.append('password', data.password);
+  formData.append('confirmPassword', data.confirmPassword);
+  if (data.aadhaarFile?.[0]) formData.append('aadhaarFile', data.aadhaarFile[0]);
+  if (data.panFile?.[0]) formData.append('panFile', data.panFile[0]);
 
-  const onSubmit = async (data) => {
-    if (!emailVerified) {
-      toast.error("Please verify your email before registering.");
-      return;
-    }
+  try {
+    await registerUserMutation(formData);
+    setEmailVerified(false);
+    setOtpSent(false);
+    navigate('/login');
+  } catch (err) {
+    console.error("Registration failed:", err);
+  }
+};
 
-    const formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('email', data.email);
-    formData.append('state', data.state);
-    formData.append('district', data.district);
-    formData.append('tehsil', data.tehsil);
-    formData.append('password', data.password);
-    formData.append('confirmPassword', data.confirmPassword);
-    if (data.aadhaarFile?.[0]) formData.append('aadhaarFile', data.aadhaarFile[0]);
-    if (data.panFile?.[0]) formData.append('panFile', data.panFile[0]);
 
-    try {
-await registerUserMutation(formData); // sending FormData directly
-      setEmailVerified(false);
-      setOtpSent(false);
-      navigate('/login');
-    } catch (err) {
-    }
-  };
+
 
 
 

@@ -79,13 +79,22 @@ const useMutate = ({
           },
           error: (err) => {
             console.error('Mutation error:', err);
-            if (renderApiErrorMsg) {
-              if (err instanceof AxiosError) {
-                return err?.response?.data?.message || 'Something went wrong';
-              } else if (err instanceof Error) {
-                return err.message;
-              }
-            }
+        if (renderApiErrorMsg) {
+  if (err instanceof AxiosError) {
+    const data = err.response?.data;
+
+    // Safely try these in order
+    return (
+      data?.message?.error || // case: { message: { error: "..." } }
+      data?.message ||        // case: { message: "..." }
+      data?.error ||          // case: { error: "..." }
+      'Something went wrong'
+    );
+  } else if (err instanceof Error) {
+    return err.message;
+  }
+}
+
             return errorMessage || 'Error! Please try again later.';
           },
         });

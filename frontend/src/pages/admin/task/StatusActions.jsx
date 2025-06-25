@@ -1,43 +1,49 @@
-import React, { useState } from 'react'
-import { Box } from '@mui/material'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CancelIcon from '@mui/icons-material/Cancel'
-import ConfirmDialog from '../lfas/dialog-box/ConfirmDialog'
+import React, { useState } from 'react';
+import { Box, Tooltip } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import ConfirmDialog from '../lfas/dialog-box/ConfirmDialog';
 
-const   StatusActions = ({ row, useUpdateHook, dialogText = {} }) => {
-  const { mutate: updateStatus } = useUpdateHook()
-  const [dialog, setDialog] = useState({ open: false, type: null })
-  console.log(updateStatus)
+const StatusActions = ({ row, useUpdateHook, dialogText = {} }) => {
+  const { mutate: updateStatus } = useUpdateHook();
+  const [dialog, setDialog] = useState({ open: false, type: null });
 
   const handleConfirm = () => {
-    updateStatus({ id: row._id, status: dialog.type }) // assuming API expects isApproved: true/false
-    setDialog({ open: false, type: null })
-  }
+    updateStatus({ id: row._id, status: dialog.type });
+    setDialog({ open: false, type: null });
+  };
 
-  const status = row.status // 'approved', 'rejected', or 'pending'
+  const status = row.status; // 'approved', 'rejected', or 'pending'
+
   return (
     <>
       <Box display="flex" justifyContent="center" gap={1}>
         {status === 'approved' && (
-          <CheckCircleIcon sx={{ color: '#16a34a' }} titleAccess="Approved" />
+          <Tooltip title="Approved">
+            <CheckCircleIcon sx={{ color: '#16a34a' }} />
+          </Tooltip>
         )}
 
         {status === 'rejected' && (
-          <CancelIcon sx={{ color: '#ef4444' }} titleAccess="Rejected" />
+          <Tooltip title="Rejected">
+            <CancelIcon sx={{ color: '#ef4444' }} />
+          </Tooltip>
         )}
 
         {status === 'pending' && (
           <>
-            <CheckCircleIcon
-              sx={{ color: '#16a34a', cursor: 'pointer' }}
-              titleAccess="Approve"
-              onClick={() => setDialog({ open: true, type: 'approved' })}
-            />
-            <CancelIcon
-              sx={{ color: '#ef4444', cursor: 'pointer' }}
-              titleAccess="Reject"
-              onClick={() => setDialog({ open: true, type: 'rejected' })}
-            />
+            <Tooltip title="Approve">
+              <CheckCircleIcon
+                sx={{ color: '#16a34a', cursor: 'pointer' }}
+                onClick={() => setDialog({ open: true, type: 'approved' })}
+              />
+            </Tooltip>
+            <Tooltip title="Reject">
+              <CancelIcon
+                sx={{ color: '#ef4444', cursor: 'pointer' }}
+                onClick={() => setDialog({ open: true, type: 'rejected' })}
+              />
+            </Tooltip>
           </>
         )}
       </Box>
@@ -60,7 +66,7 @@ const   StatusActions = ({ row, useUpdateHook, dialogText = {} }) => {
         cancelLabel={dialogText.cancelLabel || 'Cancel'}
       />
     </>
-  )
-}
+  );
+};
 
-export default StatusActions
+export default StatusActions;

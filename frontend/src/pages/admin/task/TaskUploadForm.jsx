@@ -5,24 +5,37 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { toast } from "sonner";
 import { useUpdateAssignTask } from '../../../hook/use-task.hook';
+import { useLocation, useNavigate } from "react-router-dom";
 const user = JSON.parse(localStorage.getItem('user'))
 
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 const TaskUploadForm = ({ row, taskData, onClose, isViewMode }) => {
-  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } ,watch} = useForm({});
+
+    const navigate = useNavigate();
+  const query = useQuery();
+  const lfaId = query.get('lfaId');
+
+  console.log(lfaId)
+
+  
+  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting }, watch } = useForm({});
   const inputRef = useRef();
   const imagesRef = useRef([]); // For upload mode
 
-    const [existingImages, setExistingImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
-    console.log(row)
 
-const { mutate: updateTask, isLoading: isUpdating } = useUpdateAssignTask();
+  const { mutate: updateTask, isLoading: isUpdating } = useUpdateAssignTask();
   // Extract task object if present
   const task = taskData?.data?.[0];
-  
+
 
   // Pre-fill form fields
-useEffect(() => {
+  useEffect(() => {
     if (task) {
       setValue("lfaId", task.lfaId || row?.lfaId || "");
       setValue("description", task.description || "");
@@ -37,7 +50,7 @@ useEffect(() => {
   }, [task, row, setValue]);
 
 
-    // Delete image API call
+  // Delete image API call
   const handleDeleteImage = async (imgUrl) => {
     try {
       await axios.delete(`${BASE_URL}/task/image`, {
@@ -74,77 +87,90 @@ useEffect(() => {
 
 
   // Submit handler (USER only)
-const onSubmit = async (data) => {
-  try {
-    const formData = new FormData();
-    formData.append("lfaId", data.lfaId);
-    formData.append("title", data.title);
-    formData.append("description", data.description);
-formData.append("interestedWork", JSON.stringify(data.interestedWork));
+  const onSubmit = async (data) => {
+    try {
+      const isUpdate = !!task?._id;
 
-    if (imagesRef.current.length) {
-      imagesRef.current.forEach(file => formData.append("images", file));
-      const imageDetails = imagesRef.current.map(file => ({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-      }));
-      formData.append("imageDetails", JSON.stringify(imageDetails));
-    }
+      if (!isUpdate && imagesRef.current.length === 0) {
+        toast.error("Please upload at least one image.");
+        return;
+      }
 
-    if (task && task._id) {
-      updateTask(
-        { id: task?._id, data: formData },
-        {
-          onSuccess: () => {
-            toast.success("Task updated successfully!");
-            reset();
-            onClose && onClose();
-            imagesRef.current = [];
-            if (inputRef.current) inputRef.current.value = "";
-          },
-          onError: (err) => {
-            toast.error(err?.message || "Update failed");
-          }
-        }
-      );
-    } else {
-      // If creating new, call submit API as before
-      const res = await axios.post(`${BASE_URL}/task/submit`, formData, {
-        headers: { 
-          "Content-Type": "multipart/form-data",
-          "Authorization": `Bearer ${user?.token}`,
-        },
+      const formData = new FormData();
+      formData.append("lfaId", data.lfaId);
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      const interestedWorks = Array.isArray(data.interestedWork)
+        ? data.interestedWork
+        : [data.interestedWork]; // Convert string to array if only one selected
+
+      interestedWorks.forEach((value) => {
+        formData.append("interestedWork", value);
       });
 
-      toast.success(res.data.message || "Application submitted");
-      reset();
-      onClose && onClose();
-      imagesRef.current = [];
-      if (inputRef.current) inputRef.current.value = "";
+
+      if (imagesRef.current.length) {
+        imagesRef.current.forEach(file => formData.append("images", file));
+        const imageDetails = imagesRef.current.map(file => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        }));
+        formData.append("imageDetails", JSON.stringify(imageDetails));
+      }
+
+      if (task && task._id) {
+        updateTask(
+          { id: task?._id, data: formData },
+          {
+            onSuccess: () => {
+              toast.success("Task updated successfully!");
+              reset();
+              onClose && onClose();
+              imagesRef.current = [];
+              if (inputRef.current) inputRef.current.value = "";
+            },
+            onError: (err) => {
+              toast.error(err?.message || "Update failed");
+            }
+          }
+        );
+      } else {
+        // If creating new, call submit API as before
+        const res = await axios.post(`${BASE_URL}/task/submit`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${user?.token}`,
+          },
+        });
+
+        toast.success(res.data.message || "Application submitted");
+        reset();
+        onClose && onClose();
+        imagesRef.current = [];
+        if (inputRef.current) inputRef.current.value = "";
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
-  } catch (error) {
-    toast.error(error.message);
-  }
-};
-setValue("interestedWork", row?.interestedWork.split(" ") || []);
+  };
+  setValue("interestedWork", row?.interestedWork.split(" ") || []);
 
 
-const workArray = row?.interestedWork
-  ?.split(",")
-  .map(item => item.trim())
-  .filter(Boolean) || [];
-
-console.log(workArray); // ['Recovery', 'Startup', 'Property']
+  const workArray = row?.interestedWork
+    ?.split(",")
+    .map(item => item.trim())
+    .filter(Boolean) || [];
 
 
-useEffect(() => {
-  setValue("interestedWork", workArray);
-}, [workArray, setValue]);
+
+  useEffect(() => {
+    setValue("interestedWork", workArray);
+  }, [workArray, setValue]);
 
 
   // Only USER can 
-    const isEditable = user?.role === "USER";
+  const isEditable = user?.role === "USER";
 
   return (
     <section className="py-12 bg-white">
@@ -163,25 +189,25 @@ useEffect(() => {
               disabled
             />
           </div>
-              <div className="">
+          <div className="">
             <label className="block font-medium mb-2"> Work </label>
-<div className="flex flex-wrap gap-4">
-  {console.log(workArray)}
-  {workArray.map((option) => (
-    <label key={option} className="inline-flex items-center space-x-2">
-      <input
-        type="checkbox"
-        value={option}
-        {...register("interestedWork", {
-          required: "Please select at least one option",
-        })}
-        defaultChecked={true} // ✅ Pre-checked from `workArray`
-        className="form-checkbox h-5 w-5 text-emerald-600 border border-gray-300 rounded focus:ring-emerald-500"
-      />
-      <span className="text-gray-700">{option}</span>
-    </label>
-  ))}
-</div>
+            <div className="flex flex-wrap gap-4">
+              {workArray.map((option) => (
+                <label key={option} className="inline-flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    value={option}
+                    disabled={!isEditable}
+                    {...register("interestedWork", {
+                      required: "Please select at least one option",
+                    })}
+                    defaultChecked={true} 
+                    className="form-checkbox h-5 w-5 text-emerald-600 border border-gray-300 rounded focus:ring-emerald-500"
+                  />
+                  <span className="text-gray-700">{option}</span>
+                </label>
+              ))}
+            </div>
 
 
 
@@ -204,7 +230,7 @@ useEffect(() => {
           <div className="md:col-span-2">
             <label className="block font-medium mb-1">Description</label>
             <textarea
-              {...register("description", { required: "Description is required" })}
+              {...register("description",)}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
               rows={3}
               placeholder="Enter description"
@@ -214,7 +240,7 @@ useEffect(() => {
             />
             {errors.description && <span className="text-red-500 text-sm">{errors.description.message}</span>}
           </div>
-      <div className="md:col-span-2">
+          <div className="md:col-span-2">
             <label className="block font-medium mb-1">Upload Images</label>
             {isEditable && (
               <>
@@ -282,21 +308,21 @@ useEffect(() => {
             {/* ADMIN: Only preview images */}
             {!isEditable && (
               <>
-               {task?.images && task.images.length > 0 ? (
-  <div className="flex flex-wrap gap-4 mt-3">
-    {task.images.map((img, idx) => (
-      <div key={idx} className="relative flex flex-col items-center">
-        <a href={img} target="_blank" rel="noopener noreferrer">
-          <img
-            src={img}
-            alt={`uploaded-${idx}`}
-            className="w-24 h-24 object-cover rounded border border-gray-300 hover:opacity-80 transition"
-            style={{ cursor: "pointer" }}
-          />
-        </a>
-        <span className="text-xs mt-1 max-w-[6rem] truncate">{img.split('/').pop()}</span>
-      </div>
-    ))}
+                {task?.images && task.images.length > 0 ? (
+                  <div className="flex flex-wrap gap-4 mt-3">
+                    {task.images.map((img, idx) => (
+                      <div key={idx} className="relative flex flex-col items-center">
+                        <a href={img} target="_blank" rel="noopener noreferrer">
+                          <img
+                            src={img}
+                            alt={`uploaded-${idx}`}
+                            className="w-24 h-24 object-cover rounded border border-gray-300 hover:opacity-80 transition"
+                            style={{ cursor: "pointer" }}
+                          />
+                        </a>
+                        <span className="text-xs mt-1 max-w-[6rem] truncate">{img.split('/').pop()}</span>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <span className="text-gray-500 text-sm">No images uploaded.</span>
@@ -304,16 +330,16 @@ useEffect(() => {
               </>
             )}
           </div>
-          
+
           {isEditable && (
             <div className="md:col-span-2 flex justify-between items-center mt-4">
-           <button
-  type="submit"
-  disabled={isSubmitting || isUpdating}
-  className="bg-emerald-600 text-white px-6 py-2 rounded hover:bg-emerald-700 font-medium shadow cursor-pointer"
->
-  {isSubmitting || isUpdating ? 'Submitting...' : (task && task._id ? 'Update Task' : 'Submit Application')}
-</button>
+              <button
+                type="submit"
+                disabled={isSubmitting || isUpdating}
+                className="bg-emerald-600 text-white px-6 py-2 rounded hover:bg-emerald-700 font-medium shadow cursor-pointer"
+              >
+                {isSubmitting || isUpdating ? 'Submitting...' : (task && task._id ? 'Update Task' : 'Submit Application')}
+              </button>
               <button
                 type="button"
                 className="text-gray-500 hover:text-emerald-600 cursor-pointer"

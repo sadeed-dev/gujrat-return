@@ -19,13 +19,18 @@ export const handleSubmitAssingedTask = async (req) => {
     images.map(file => uploadFileToS3(file, 'lfa-task-submission'))
   );
 
-  const { lfaId, title, description, imageDetails } = req.body;
+  const { lfaId, title, description, imageDetails , interestedWork} = req.body;
 
+  // Ensure interestedWork is always an array
+const parsedInterestedWork = Array.isArray(interestedWork)
+  ? interestedWork
+  : [interestedWork];
 
 const newEntry = new Task({
   lfaId, // This should be an ObjectId reference to the LFA
   title,
   description,
+  interestedWork:parsedInterestedWork,
   images: uploadedImages.map(img => img.Location), // URLs from S3
   submittedBy: userId, // Match schema field name
 });
@@ -43,7 +48,7 @@ const newEntry = new Task({
       title: 'Task Submitted',
       message: `A ${lfa?.assignment?.assignedTo?.name} has submitted a task for LFA ${(lfaId)}`,
       type: 'info',
-      redirectionURL: `/admin/tasks/view/${savedTask._id}`,
+      redirectionURL: `admin/task?lfaId=${lfa._id}`,
       recipients: [adminId],
     });
 
@@ -132,13 +137,17 @@ export const handleUpdateAssingedTask = async (req) => {
   const userId = req.user._id; // Ensure this is from authentication middleware
   const images = req.files?.images || [];
 
-  const { title, description, imageDetails } = req.body;
+  const { title, description, imageDetails ,interestedWork} = req.body;
 
   // Find the task
   const task = await Task.findById(taskId);
   if (!task) {
     throw new Error('Task not found');
   }
+
+  const parsedInterestedWork = Array.isArray(interestedWork)
+  ? interestedWork
+  : [interestedWork];
 
 
   // Upload new images if any
@@ -152,6 +161,10 @@ export const handleUpdateAssingedTask = async (req) => {
   // Update fields if provided
   if (title) task.title = title;
   if (description) task.description = description;
+    if (interestedWork.length){
+      task.interestedWork =parsedInterestedWork
+    }
+
   if (uploadedImages.length) {
     task.images = [...task.images, ...uploadedImages.map(img => img.Location)];
   }

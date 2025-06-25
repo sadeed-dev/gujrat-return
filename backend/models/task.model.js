@@ -10,9 +10,13 @@ const taskSubmissionSchema = new mongoose.Schema({
     type: String, 
     required:true
   },
-  
+
+  interestedWork: {
+  type: [String],
+  required: true,
+  },
   images: {
-  type: [String], // Array of image URL strings
+  type: [String], 
   required: true,
   },
     description: String,
@@ -22,6 +26,7 @@ const taskSubmissionSchema = new mongoose.Schema({
     ref: "User", 
     required: true,
   },
+
   
 
 }, { timestamps: true });

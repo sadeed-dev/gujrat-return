@@ -63,6 +63,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose , isViewOnly = false })
     watch,
     control,
     setValue,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues,
@@ -85,6 +86,7 @@ const UserEditForm = ({ defaultValues, onSubmit, onClose , isViewOnly = false })
 
     // Initial fallback to default
     if (defaultValues) {
+      reset(defaultValues)
       setAadhaarPreview(defaultValues.aadhaarFile || "");
       setPanPreview(defaultValues.panFile || "");
     }

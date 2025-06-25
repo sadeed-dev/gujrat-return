@@ -13,6 +13,7 @@ import {
   Box,
   Avatar,
   Chip,
+  
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../../context/auth/AuthContext";
@@ -20,6 +21,8 @@ import { useDiscloseChatRoom, useGetAllRooms, useGetChats } from "../../../../ho
 import { useGetAllUsers } from "../../../../hook/use-user.hook";
 import socket from "../../../../socket/socket";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import {Link } from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 import { IconButton, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import ConfirmDialog from "../dialog-box/ConfirmDialog";
@@ -41,6 +44,9 @@ const { mutate: discloseChatRoom, isPending: loadingDisclose } = useDiscloseChat
   const messagesEndRef = useRef(null);
 
 
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text);
+}
   
 const handleDisclose = () => {
   discloseChatRoom(
@@ -56,13 +62,14 @@ const handleDisclose = () => {
 };
 
 
+
+
     const [discloseDialog, setDiscloseDialog] = useState(false);
 
   const chatRoomId = room?.lfaId;
 
   const participantNames = allUsers?.data
-    ?.filter((u) => room?.participants?.includes(u._id))
-    ?.map((u) => u.name);
+    ?.filter((u) => room?.participants?.includes(u._id));
 
 useEffect(() => {
   if (!room || !initialChats) return;
@@ -158,11 +165,32 @@ user?.role === "ADMIN" && (
             {room?.name}
           </Typography>
 
-          <Box display="flex" gap={1} mb={2} flexWrap="wrap">
-            {participantNames?.map((p, i) => (
-              <Chip key={i} label={p} color="primary" variant="outlined" />
-            ))}
-          </Box>
+       <Box display="flex" gap={1} mb={2} flexWrap="wrap">
+      {participantNames?.map((p, i) => (
+        console.log(participantNames),
+        <Tooltip
+          key={i}
+          title={
+            <Box display="flex" alignItems="center" gap={1}>
+              <Box>
+                <Typography variant="body2"><strong>{p.name}</strong></Typography>
+                <Typography variant="caption">{p.email}</Typography>
+              </Box>
+<IconButton size="small" onClick={() => copyToClipboard(p.email)} sx={{ color: '#ffffff' }}>
+                <ContentCopyIcon color="" fontSize="inherit" />
+              </IconButton>
+            </Box>
+          }
+          arrow
+          placement="top"
+        >
+
+  <Chip label={p.name} color="primary" variant="outlined" clickable onClick={() => navigate(`/admin/users/view/${p._id}`)} />
+
+
+        </Tooltip>
+      ))}
+    </Box>
 
           <Box
             sx={{

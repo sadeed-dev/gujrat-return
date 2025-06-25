@@ -76,9 +76,17 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
 
       reset();
     } catch (error) {
+      console.log(error)
       console.error("Error submitting form:", error);
-      toast.error(error.message);
-    }
+  if (error.status === 401) {
+    toast.error("Unauthorized: Please log in first!");
+  } else if (error.status === 403) {
+    toast.error("Access denied: You don’t have permission!");
+  } else if (error.status === 400) {
+    toast.error(serverMessage || "Bad request.");
+  } else {
+    toast.error(serverMessage || "Something went wrong. Please try again.");
+  }    }
   };
 
 
@@ -153,6 +161,7 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
               {...register("name")}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
               type="text"
+              placeholder="Enter your Full Name"
               disabled={isViewOnly}
               readOnly={isViewOnly}
             />
@@ -228,25 +237,29 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
             </select>
             {errors.district && <span className="text-red-500 text-sm">{errors.district.message}</span>}
           </div>
-          <div>
-            <label className="block font-medium mb-1">Tehsil</label>
-            <select
-              {...register("tehsil", { required: "Tehsil is required" })}
-              className="w-full border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              defaultValue=""
-              disabled={!selectedState && !selectedDistrict || isViewOnly}
-            >
-              <option value="">Select Tehsil</option>
-              {selectedState && selectedDistrict &&
-                states
-                  .find(s => s.name === selectedState)?.districts
-                  .find(d => d.name === selectedDistrict)?.tehsils
-                  .map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-            </select>
-            {errors.tehsil && <span className="text-red-500 text-sm">{errors.tehsil.message}</span>}
-          </div>
+<div className={!(isEditForm || isViewOnly) ? "md:col-span-2 col-span-1" : "col-span-1"}>
+  <label className="block font-medium mb-1">Tehsil</label>
+  <select
+    {...register("tehsil", { required: "Tehsil is required" })}
+    className="w-[18.5rem] border border-gray-300 rounded px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+    defaultValue=""
+    disabled={(!selectedState && !selectedDistrict) || isViewOnly}
+  >
+    <option value="">Select Tehsil</option>
+    {selectedState && selectedDistrict &&
+      states
+        .find(s => s.name === selectedState)?.districts
+        .find(d => d.name === selectedDistrict)?.tehsils
+        .map((t) => (
+          <option key={t} value={t}>{t}</option>
+        ))}
+  </select>
+  {errors.tehsil && (
+    <span className="text-red-500 text-sm">{errors.tehsil.message}</span>
+  )}
+</div>
+
+
           {/* Aadhaar Upload */}
           <div className="mb-4">
             <label className="block font-medium">Aadhaar File:</label>

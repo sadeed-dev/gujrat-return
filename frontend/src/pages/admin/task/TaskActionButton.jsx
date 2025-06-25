@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Dialog, DialogContent, Tooltip } from "@mui/material";
 import { useAuth } from "../../../context/auth/AuthContext";
 import { useGetAllLfaTasks, useGetReviewLfaTask } from "../../../hook/use-task.hook";
 import TaskUploadForm from "./TaskUploadForm";
+import { useLocation, useNavigate } from "react-router-dom";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
 
 const TaskActionButton = ({ row }) => {
   const { user } = useAuth();
@@ -12,20 +18,45 @@ const TaskActionButton = ({ row }) => {
   const [enabledFetch, setEnabledFetch] = useState(false);
 
   const { data: allTasks } = useGetAllLfaTasks();
+
+
   const hasTask = allTasks?.data?.some(task => task.lfaId === row.lfaId);
+
+  const navigate = useNavigate();
+  const query = useQuery();
+  const lfaIdFromUrl = query.get("lfaId");
+
+  console.log(lfaIdFromUrl)
+  const shouldOpenDialog = lfaIdFromUrl === row._id;
+
 
   const { data: taskData, isLoading, isError } = useGetReviewLfaTask(row?.lfaId, {
     enabled: !!row?.lfaId && enabledFetch,
   });
 
-  const handleClick = () => {
+  
+  // Auto-open when URL has matching lfaId
+  useEffect(() => {
+    if (shouldOpenDialog) {
+      setEnabledFetch(true);
+      setOpen(true);
+    }
+  }, [shouldOpenDialog]);
+
+
+
+  const handleClick = (row) => {
+    console.log(row)
     setEnabledFetch(true);
     setOpen(true);
+  navigate(`/admin/task?lfaId=${row?._id}`);
   };
 
   const handleClose = () => {
     setOpen(false);
     setEnabledFetch(false);
+   navigate(`/admin/task`)
+
   };
 
   const label = isAdmin ? "View Task" : "Upload Task";
@@ -44,7 +75,7 @@ const TaskActionButton = ({ row }) => {
           <Button
             variant="outlined"
             size="small"
-            onClick={handleClick}
+            onClick={() => handleClick(row)} 
             disabled={disabled}
             sx={{
               backgroundColor: "#f0f9ff",            // modern light blue
@@ -81,6 +112,7 @@ const TaskActionButton = ({ row }) => {
               isViewMode={isAdmin}
             />
           )}
+          
         </DialogContent>
       </Dialog>
     </>

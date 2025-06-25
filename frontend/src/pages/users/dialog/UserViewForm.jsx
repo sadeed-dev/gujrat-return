@@ -10,25 +10,15 @@ const UserViewForm = () => {
   const {id} = useParams();
   const [open, setOpen] = useState(true);
   const {data} = useGetUser(id);
-  console.log(data)
 
 
   const handleClose = () => {
-    setOpen(false);
-    navigate("/admin/users"); 
+    navigate(-1);   
   };
-
   useEffect(() => {
     setOpen(true); 
   }, [id]);
 
-//  <DialogContent>
-//           <UserEditForm
-//             defaultValues={editRow}
-//             onSubmit={handleEditSubmit}
-//             onClose={() => setEditOpen(false)}
-//           />
-//         </DialogContent>
 
 
   return (

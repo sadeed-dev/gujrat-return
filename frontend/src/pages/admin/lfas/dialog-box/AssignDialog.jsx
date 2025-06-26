@@ -180,12 +180,13 @@ const AssignDialog = ({
   onClose,
   onConfirm,
   lfaRegion = {},
+  assignPending,
   title = "Assign LFA To User",
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   themeColor = "#16a34a"
 }) => {
-const users = usersList?.data.filter((user) => user.role !== "ADMIN") || [];
+const users = usersList?.data?.filter((user) => user.role !== "ADMIN") || [];
 
   const matchingUsers = [];
   const otherUsers = [];
@@ -292,7 +293,7 @@ const users = usersList?.data.filter((user) => user.role !== "ADMIN") || [];
         <Button
           onClick={onConfirm}
           variant="contained"
-          disabled={!selectedUser}
+          disabled={!selectedUser|| assignPending }
           sx={{
             backgroundColor: themeColor,
             "&:hover": { backgroundColor: "#15803d" },

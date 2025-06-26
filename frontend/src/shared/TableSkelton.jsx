@@ -18,7 +18,7 @@ const TableSkeleton = ({ columns = 6, rows = 5, cellHeight = 10,}) => {
           <TableRow>
             {Array.from({ length: columns }).map((_, index) => (
               <TableCell key={index}>
-                <Skeleton variant="text" height={24} />
+                <Skeleton variant="text" height={30} />
               </TableCell>
             ))}
           </TableRow>

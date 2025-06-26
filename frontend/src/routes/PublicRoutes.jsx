@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Settings } from 'lucide-react';
 import ScrollToTop from '../shared/ScrollToTop'
+import NotFound from '../pages/NotFound';
 const HomePage = React.lazy(() => import('../pages/HomePage'));
 const About = React.lazy(() => import('../pages/About'));
 const LFa = React.lazy(() => import('../pages/LFa'));
@@ -37,6 +38,8 @@ const PublicRoutes = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/setting" element={<Settings />} />
           <Route path="/register" element={<Register />} />
+                <Route path="*" element={<NotFound />} />
+
         </Routes>
       </main>
       <Footer />

@@ -23,8 +23,8 @@ export const useGetAllRooms = () => {
 };
 
 
-export const useCreateChatRoom = () =>{
-    const queryClient = useQueryClient();
+export const useCreateChatRoom = () => {
+  const queryClient = useQueryClient();
   return useMutate({
     mutationKey: ['create-chat-room'],
     api: '/chat/room-with-offer',
@@ -33,11 +33,14 @@ export const useCreateChatRoom = () =>{
     pendingMessage: 'Sending offer...',
     successMessage: 'Chat room created successfully!',
     errorMessage: 'Failed to create chat room.',
-    auth: true, // automatically adds Authorization header from context
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['all-rooms'] });
+    auth: true,
+    options: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['all-rooms'] });
+      },
     },
-  });}
+  });
+};
 
 
 
@@ -77,6 +80,7 @@ export const useReactivateChatroom = () => {
      options: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['all-rooms'] });
+
       },
     },
   });

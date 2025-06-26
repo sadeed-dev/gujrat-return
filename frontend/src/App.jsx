@@ -4,7 +4,6 @@ import { Toaster } from 'sonner';
 
 import { useAuth } from './context/auth/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
-
 import AdminRoutes from './routes/AdminRoutes';
 import UserRoutes from './routes/UserRoutes';
 import PublicRoutes from './routes/PublicRoutes';
@@ -21,6 +20,9 @@ function App() {
             <Route path="/admin/*" element={<AdminRoutes />} />
             <Route path="/user/*" element={<UserRoutes />} />
             <Route path="/*" element={<PublicRoutes />} />
+
+                  {/* Catch-all 404 route */}
+
           </Routes>
         </Suspense>
       </Router>

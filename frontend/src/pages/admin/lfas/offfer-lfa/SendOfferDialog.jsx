@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useAuth } from '../../../../context/auth/AuthContext'
 
-const SendOfferDialog = ({ open, onClose, allUsers, onSubmit, selectedLFA }) => {
+const SendOfferDialog = ({ open, onClose, allUsers, onSubmit, selectedLFA, isPending }) => {
 
   const { register, handleSubmit, reset, control, setValue, watch, formState } = useForm();
   const { user: currentUser } = useAuth()
@@ -121,13 +121,13 @@ const SendOfferDialog = ({ open, onClose, allUsers, onSubmit, selectedLFA }) => 
           type="submit"
           variant="contained"
           onClick={handleSubmit(handleFormSubmit)}
-          disabled={isSubmitting}
+          disabled={isPending}
           sx={{
             backgroundColor: "#3b82f6",
             "&:hover": { backgroundColor: "#2563eb" },
           }}
         >
-          {isSubmitting ? "Sending..." : "Send Offer"}
+          {isPending ? "Sending..." : "Send Offer"}
         </Button>
       </DialogActions>
     </Dialog>

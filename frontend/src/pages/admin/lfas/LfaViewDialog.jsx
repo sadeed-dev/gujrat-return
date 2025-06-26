@@ -20,10 +20,11 @@ export default function LfaViewDialog() {
   const {data} = useGetLFAs(lfaId);
   console.log(lfaId)
 
-  const handleClose = () => {
-    setOpen(false);
-    navigate("/admin/lfas"); 
-  };
+const handleClose = () => {
+  setOpen(false);
+  navigate('/admin/lfas'); // ⬅ Go directly to the list page
+};
+
 
   useEffect(() => {
     setOpen(true); 

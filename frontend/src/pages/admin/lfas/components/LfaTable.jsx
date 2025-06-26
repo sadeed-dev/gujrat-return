@@ -26,7 +26,8 @@ import { useNavigate } from "react-router-dom"
 import { useCreateChatRoom, useReactivateChatroom } from "../../../../hook/use-lfachat.hook"
 import { getLfaTableColumns } from "./LfaColumns"
 import { useAuth } from "../../../../context/auth/AuthContext"
-
+import ColumnVisibilityToggle from "../../../../shared/columnVisibilityToggle"
+import useColumnVisibility from "../../../../hook/use-columnVisibility.hook"
 const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch, setActiveView,
 }) => {
   const navigate = useNavigate()
@@ -130,6 +131,25 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
     setDiscloseDialog({ open: true, row })
   }
 
+
+  const allColumns = getLfaTableColumns({
+    isAdmin,
+    handleView,
+    handleEdit,
+    handleDelete,
+    handleSendOffer,
+    handleDisclose,
+    allChatRooms: chatRooms,
+  });
+  
+  const {
+    visibility,
+    setValue,
+    toggleField
+  } = useColumnVisibility(allColumns, "lfaTable");
+
+  const visibleColumns = allColumns.filter(col => visibility[col.field] !== false);
+
   const { mutate: assignTo, isPending:assignPending } = useAssignTo(assignDialog.row?._id)
   const { mutate: reactivateChatRoom } = useReactivateChatroom()
 
@@ -156,7 +176,7 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} marginBottom={'.5rem'}>
         {/* Filters */}
         <Grid item xs={12} md={6}>
           <Card sx={{ backgroundColor: "white", border: "1px solid #e5e7eb" }}>
@@ -210,7 +230,21 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
         <Grid item xs={12} md={6}>
           <StatusCards statusCounts={statusCounts} total={localData.length} />
         </Grid>
+
+      {/* Column Visibility Toggle */}
+
+          <Box mt={2}>
+<ColumnVisibilityToggle
+  columns={allColumns}
+  visibility={visibility}
+  setValue={setValue}
+  toggleField={toggleField}
+/>
+
+      </Box>
       </Grid>
+
+    
 
       {/* Table */}
       {lfaLoading ? (
@@ -218,15 +252,7 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
       ) : (
         <TableDisplay
           data={paginatedData}
-          columns={getLfaTableColumns({
-            isAdmin,
-            handleView,
-            handleEdit,
-            handleDelete,
-            handleSendOffer,
-            handleDisclose,
-            allChatRooms: chatRooms,
-          })}
+                columns={visibleColumns}
           page={page}
           rowsPerPage={rowsPerPage}
           totalCount={filteredData.length}

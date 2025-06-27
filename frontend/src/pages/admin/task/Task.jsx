@@ -11,7 +11,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import TaskActionButton from './TaskActionButton'
 import TableSkeleton from '../../../shared/TableSkelton'
 import useColumnVisibility from '../../../hook/use-columnVisibility.hook'
-import ColumnVisibilityToggle from '../../../shared/columnVisibilityToggle'
+import ColumnVisibilityToggle from '../../../shared/ColumnVisibilityToggle'
 
 
 const Task = () => {

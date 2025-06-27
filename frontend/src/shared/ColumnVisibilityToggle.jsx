@@ -1,5 +1,5 @@
 // shared/ColumnVisibilityToggle.js
-"use client";
+
 import {
   Box,
   Button,
@@ -19,7 +19,7 @@ import React, { useRef, useState } from "react";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import SearchIcon from "@mui/icons-material/Search";
 
-export default function ColumnVisibilityToggle({ columns, visibility, setValue ,toggleField}) {
+const ColumnVisibilityToggle = ({ columns, visibility, setValue ,toggleField}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState("");
   const open = Boolean(anchorEl);
@@ -166,3 +166,4 @@ export default function ColumnVisibilityToggle({ columns, visibility, setValue ,
     </Box>
   );
 }
+export default ColumnVisibilityToggle

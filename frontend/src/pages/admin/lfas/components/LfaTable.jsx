@@ -26,7 +26,7 @@ import { useNavigate } from "react-router-dom"
 import { useCreateChatRoom, useReactivateChatroom } from "../../../../hook/use-lfachat.hook"
 import { getLfaTableColumns } from "./LfaColumns"
 import { useAuth } from "../../../../context/auth/AuthContext"
-import ColumnVisibilityToggle from "../../../../shared/columnVisibilityToggle"
+import ColumnVisibilityToggle from "../../../../shared/ColumnVisibilityToggle"
 import useColumnVisibility from "../../../../hook/use-columnVisibility.hook"
 const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch, setActiveView,
 }) => {

@@ -7,14 +7,17 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const user = JSON.parse(localStorage.getItem('user'));
 
   
-export const useGetAllUsers = () => {
+export const useGetAllUsers = (filters = {}) => {
+  const params = new URLSearchParams(filters).toString();
+
   return useFetch({
-    queryKey: ['all-users'],
-    api: 'user/get-users', 
+    queryKey: ['all-users', filters],
+    api: `user/get-users?${params}`,
     auth: true,
     backend: true,
   });
 };
+
 
 export const useGetUser = (id) => {
   return useFetch({

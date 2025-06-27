@@ -1,11 +1,31 @@
 import User from '../models/user.model.js';
 import { uploadFileToS3 } from './s3.service.js';
 
-export const handleGetAllUsers = async () => {
-  return await User.find({
+export const handleGetAllUsers = async (filters) => {
+
+  const query = {
     isDeleted: { $ne: true },
     status: { $ne: "rejected" },
-  }).select("-password");
+  };
+
+  if(filters.search){
+    query.$or = [
+      { name : {$regex: filters.search, $options:'i'}},
+      { email : { $regex: filters.search, $options:'i'}}
+    ]
+  }  
+  // Apply Role Filter
+  if (filters.role) {
+    query.role = filters.role;
+  }
+
+  // Apply Approval Status Filter
+  if (filters.status) {
+    query.status = filters.status;
+  }
+
+  const users = await User.find(query).select("-password");
+  return users;
 };
 
 

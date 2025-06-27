@@ -2,8 +2,14 @@ import { handleGetAllUsers, handleUpdateUser,handleGetUser, handleDeleteUser ,ha
 
 export const getAllUsers = async (req, res) => {
   try {
-    const result = await handleGetAllUsers(req);
-    res.status(201).json({ message: 'Users getting successfull', data: result });
+    const filters = {
+      search: req.query.search || "",
+      role: req.query.role || "",
+      status: req.query.status || "",
+    };
+
+    const users = await handleGetAllUsers(filters);
+    res.status(201).json({ message: 'Users getting successfull', data: users });
   } catch (error) {
     console.error('Failed getting Users:', error);
     res.status(500).json({ message: 'Failed getting Users', error: error.message });

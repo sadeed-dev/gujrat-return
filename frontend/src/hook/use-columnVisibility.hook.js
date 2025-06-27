@@ -26,18 +26,26 @@ export default function useColumnVisibility(columns, tableId) {
         console.warn("Failed to parse column visibility", e);
       }
     }
-  }, [tableId]);
+  }, [tableId, setValue]);
 
   // Save to localStorage on change
   useEffect(() => {
     localStorage.setItem(`column-visibility-${tableId}`, JSON.stringify(visibility));
   }, [visibility, tableId]);
 
+  // Add this function:
+  const toggleField = (field) => {
+    const newVisibility = { ...visibility, [field]: !visibility[field] };
+    setValue(`visibility.${field}`, !visibility[field]);
+    localStorage.setItem(`column-visibility-${tableId}`, JSON.stringify(newVisibility));
+  };
+
   return {
     visibility,
     setValue,
     control,
     getValues,
+    toggleField, // <-- export this
     ...rest,
   };
 }

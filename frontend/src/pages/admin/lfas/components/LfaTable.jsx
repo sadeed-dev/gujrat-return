@@ -147,7 +147,6 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
     setValue,
     toggleField
   } = useColumnVisibility(allColumns, "lfaTable");
-
   const visibleColumns = allColumns.filter(col => visibility[col.field] !== false);
 
   const { mutate: assignTo, isPending:assignPending } = useAssignTo(assignDialog.row?._id)

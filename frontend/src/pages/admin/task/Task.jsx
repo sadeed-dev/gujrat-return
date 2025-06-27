@@ -10,6 +10,8 @@ import { Visibility as VisibilityIcon } from "@mui/icons-material"
 import { Outlet, useNavigate } from 'react-router-dom'
 import TaskActionButton from './TaskActionButton'
 import TableSkeleton from '../../../shared/TableSkelton'
+import useColumnVisibility from '../../../hook/use-columnVisibility.hook'
+import ColumnVisibilityToggle from '../../../shared/columnVisibilityToggle'
 
 
 const Task = () => {
@@ -173,6 +175,13 @@ const columns = [
 
 ];
 
+  const {
+    visibility,
+    setValue,
+    toggleField
+  } = useColumnVisibility(columns, "taskTable");
+  const visibleColumns = columns.filter(col => visibility[col.field] !== false);
+
 
   // Prepare and filter data
   const filteredData = useMemo(() => {
@@ -230,6 +239,16 @@ const columns = [
                 size="small"
               />
             </Grid>
+
+            
+          <Box >
+<ColumnVisibilityToggle
+  columns={columns}
+  visibility={visibility}
+  setValue={setValue}
+  toggleField={toggleField}
+/>
+</Box>
           </Grid>
         </Box>
 
@@ -240,7 +259,7 @@ const columns = [
         ): (
         <DataTable
           data={paginatedData}
-          columns={columns}
+          columns={visibleColumns}
           page={page}
           rowsPerPage={rowsPerPage}
           totalCount={filteredData.length}

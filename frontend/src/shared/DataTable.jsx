@@ -108,9 +108,9 @@ const DataTable = ({
           </Box>
         )
 
-
 case "assign":
-  return row.assignedUserName ? (
+  return row?.assignment?.assignedTo?.name
+  ? (
     <Box
       sx={{
         position: "relative",

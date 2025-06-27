@@ -19,15 +19,16 @@ import React, { useRef, useState } from "react";
 import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import SearchIcon from "@mui/icons-material/Search";
 
-export default function ColumnVisibilityToggle({ columns, visibility, setValue }) {
+export default function ColumnVisibilityToggle({ columns, visibility, setValue ,toggleField}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [search, setSearch] = useState("");
   const open = Boolean(anchorEl);
   const ref = useRef(null);
 
-  const handleToggle = (field) => {
-    setValue(`visibility.${field}`, !visibility?.[field]);
-  };
+  // const handleToggle = (field) => {
+  //   console.log(field)
+  //   setValue(`visibility.${field}`, !visibility?.[field]);
+  // };
 
   const handleShowAll = () => {
     const allVisible = {};
@@ -124,15 +125,39 @@ export default function ColumnVisibilityToggle({ columns, visibility, setValue }
                   <Checkbox
                     size="small"
                     checked={visibility[col.field] !== false}
-                    onChange={() => handleToggle(col.field)}
+          onChange={() => toggleField(col.field)}
                   />
                   <Typography variant="body2">{col.headerName}</Typography>
                 </MenuItem>
               ))}
               <Box display="flex" justifyContent="space-between" px={1} mt={1}>
-                <Button size="small" onClick={handleShowAll}>Show All</Button>
-                <Button size="small" onClick={handleHideAll}>Hide All</Button>
-                <Button size="small" onClick={handleReset}>Reset</Button>
+<Button 
+  size="small" 
+  variant="outlined" 
+  onClick={handleShowAll}
+  sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
+>
+  Show All
+</Button>
+
+<Button 
+  size="small" 
+  variant="outlined" 
+  onClick={handleHideAll}
+  sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
+>
+  Hide All
+</Button>
+
+
+<Button 
+  size="small" 
+  variant="contained" 
+  onClick={handleReset}
+  sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
+>
+  Reset
+</Button>
               </Box>
             </MenuList>
           </Paper>

@@ -120,7 +120,7 @@ import mongoose from 'mongoose';
 
     const {
       name, mobileNumber, state, district, tehsil,
-      interestedWork, bankAccountNumber,ifscCode
+      interestedWork, bankAccountNumber,ifscCode,remark
     } = req.body;
 
     const lastEntry = await LFA.findOne().sort({ createdAt: -1 });
@@ -139,6 +139,7 @@ import mongoose from 'mongoose';
       interestedWork: Array.isArray(interestedWork) ? interestedWork : [interestedWork],
       aadhaarFile: aadhaarUpload.Location,
       panFile: panUpload.Location,
+      remark,
       createdBy: userId,
     }).save();
 
@@ -184,16 +185,50 @@ import mongoose from 'mongoose';
   };
 
 
+export const handleGetAllLFA = async (role, userId, filters = {}) => {
+  const {
+    search = "",
+    status = "",
+    page = 1,
+    limit = 5,
+  } = filters;
 
+  const query = {};
 
-export const handleGetAllLFA = async (role, userId) => {
-  if (role === 'ADMIN') {
-    // Admin sees all LFAs
-    return await LFA.find().sort({ submittedAt: -1 });
-  } else {
-    // Normal user sees only their own LFAs
-    return await LFA.find({ createdBy: userId }).sort({ submittedAt: -1 });
+  if (role !== "ADMIN") {
+    query.createdBy = userId;
   }
+if (search) {
+  query.$or = [
+    { name: { $regex: search, $options: "i" } },
+    { lfaId: { $regex: search, $options: "i" } },
+    { interestedWork: { $regex: search, $options: "i" } },
+ 
+  ];
+}
+
+
+  if (status) {
+    query.status = status;
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    LFA.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit)),
+    LFA.countDocuments(query),
+  ]);
+
+  return {
+    data,
+    total,
+    page: parseInt(page),
+    limit: parseInt(limit),
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 
@@ -386,6 +421,7 @@ const userRole = req.user.role;
     bankDetail,
     bankAccountNumber,
     ifscCode,
+    remark
 } = req.body || {};
   // Define fields to update
   const fieldsToUpdate = {
@@ -397,6 +433,7 @@ const userRole = req.user.role;
     bankDetail,
     bankAccountNumber,
     ifscCode,
+    remark
   };
 
   // Update only provided fields

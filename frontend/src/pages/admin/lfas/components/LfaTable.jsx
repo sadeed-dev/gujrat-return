@@ -21,23 +21,24 @@ import ConfirmDialog from "../dialog-box/ConfirmDialog"
 import TableSkeleton from "../../../../shared/TableSkelton"
 import LfaFormDialog from "./LfaFormDialog"
 import StatusChangeDialog from "./StatusChangeDialog"
-import { useAssignTo } from "../../../../hook/use-Lfa.hook"
+import { useAssignTo, useGetAllLFAs } from "../../../../hook/use-Lfa.hook"
 import { useNavigate } from "react-router-dom"
 import { useCreateChatRoom, useReactivateChatroom } from "../../../../hook/use-lfachat.hook"
 import { getLfaTableColumns } from "./LfaColumns"
 import { useAuth } from "../../../../context/auth/AuthContext"
-import ColumnVisibilityToggle from "../../../../shared/ColumnVisibilityToggle"
 import useColumnVisibility from "../../../../hook/use-columnVisibility.hook"
-const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch, setActiveView,
+import { FormProvider, useForm } from "react-hook-form"
+import LfaFilters from "../filter/LfaFilters"
+import ColumnVisibilityToggle from "../../../../shared/ColumnVisibilityToggle"
+
+
+const LfaTable = ({ usersList = [],chatRooms, refetch, setActiveView,
 }) => {
   const navigate = useNavigate()
 
-  const [searchName, setSearchName] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-  const { mutate: createChatRoom, isPending} = useCreateChatRoom();
   
+  const { mutate: createChatRoom, isPending} = useCreateChatRoom();
+
 
   const { user } = useAuth()
   const [assignDialog, setAssignDialog] = useState({ open: false, row: null })
@@ -46,38 +47,44 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
   const [discloseDialog, setDiscloseDialog] = useState({ open: false, row: null })
   const [formDialog, setFormDialog] = useState({ open: false, row: null })
   const [statusDialog, setStatusDialog] = useState({ open: false, row: null, newStatus: "", oldStatus: "" })
+      const [appliedFilters, setAppliedFilters] = useState({});
 
-  const nonDeletedRooms = chatRooms?.filter(room => !room?.isDeleted)
-  const isAdmin = true // Assume always true in this version
+  const methods = useForm({
+    defaultValues: {
+      search: "",
+      status: "",
+    },
+  });
+
+  const { getValues, setValue: setFormValue } = methods;
+
+    // 🔗 Fetch paginated LFA data from backend
+  const { data: lfaData, isLoading: lfaLoading } = useGetAllLFAs({
+    ...appliedFilters,
+    page: appliedFilters.page + 1, // backend expects 1-based
+  });
+
+
+
 
   const localData = useMemo(() => {
-    if (!Array.isArray(lfaData)) return []
-    return lfaData.map((lfa) => ({
+    if (!Array.isArray(lfaData?.data?.data)) return []
+    return lfaData?.data?.data?.map((lfa) => ({
       ...lfa,
       interestedWork: Array.isArray(lfa.interestedWork) ? lfa.interestedWork.join(", ") : lfa.interestedWork || "-",
       assignedUserName: lfa?.assignment?.assignedTo?.name || "-",
     }))
   }, [lfaData])
 
-  const filteredData = useMemo(() => {
-    return localData.filter(item => {
-      const nameMatch = !searchName || item.name?.toLowerCase().includes(searchName.toLowerCase())
-      const statusMatch = statusFilter === "all" || item.status === statusFilter
-      return nameMatch && statusMatch
-    })
-  }, [localData, searchName, statusFilter])
 
-  const paginatedData = useMemo(() => {
-    const start = page * rowsPerPage
-    return filteredData.slice(start, start + rowsPerPage)
-  }, [filteredData, page, rowsPerPage])
+  console.log(lfaData)
 
-  const statusCounts = useMemo(() => {
-    return localData.reduce((acc, item) => {
-      acc[item.status] = (acc[item.status] || 0) + 1
-      return acc
-    }, {})
-  }, [localData])
+  // const statusCounts = useMemo(() => {
+  //   return localData.reduce((acc, item) => {
+  //     acc[item.status] = (acc[item.status] || 0) + 1
+  //     return acc
+  //   }, {})
+  // }, [localData])
 
   const handleAssign = (row) => {
     setAssignDialog({ open: true, row })
@@ -89,9 +96,6 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
     setFormDialog({ open: true, row: original })
   }
 
-  const handleView = (row) => {
-    navigate(`/admin/lfas/view/${row._id}`)
-  }
 
   const handleDelete = (row) => {
     console.log("DELETE", row.fullName)
@@ -101,7 +105,15 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
 
   const handleOfferSubmit = (offerData) => {
     const lfa = offerData?.lfa;
-    const offerLetter = `Work Offer\n\: ${lfa?.interestedWork || "(No interested work)"}\nLFA ID: ${lfa?.lfaId}\nName: ${lfa?.name}\nDistrict: ${lfa?.district}\nTehsil: ${lfa?.tehsil}\n\nMessage: ${offerData?.message || "(No message)"}`;
+const offerLetter = `Work Offer
+Interested Work: ${lfa?.interestedWork || "(No interested work)"}
+Remark: ${lfa?.remark || "(No remark)"}
+LFA ID: ${lfa?.lfaId}
+Name: ${lfa?.name}
+District: ${lfa?.district}
+Tehsil: ${lfa?.tehsil}
+Message: ${offerData?.message || "(No message)"}`
+
     const participants = offerData.participants.map(u => u._id);
 
     const payload = {
@@ -123,28 +135,20 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
     });
   }
 
-  const handleSendOffer = (row) => {
-    setSendOfferDialog({ open: true, row })
-  }
-
-  const handleDisclose = (row) => {
-    setDiscloseDialog({ open: true, row })
-  }
-
 
   const allColumns = getLfaTableColumns({
-    isAdmin,
-    handleView,
-    handleEdit,
-    handleDelete,
-    handleSendOffer,
-    handleDisclose,
+    isAdmin: true,
+    handleView: row => navigate(`/admin/lfas/view/${row._id}`),
+    handleEdit: row => setFormDialog({ open: true, row }),
+    handleDelete: row => console.log("DELETE", row.fullName),
+    handleSendOffer: row => setSendOfferDialog({ open: true, row }),
+    handleDisclose: row => setDiscloseDialog({ open: true, row }),
     allChatRooms: chatRooms,
   });
-  
+
   const {
     visibility,
-    setValue,
+    setValue:setValues,
     toggleField
   } = useColumnVisibility(allColumns, "lfaTable");
   const visibleColumns = allColumns.filter(col => visibility[col.field] !== false);
@@ -173,98 +177,103 @@ const LfaTable = ({ lfaData = [], usersList = [], lfaLoading, chatRooms, refetch
     setStatusDialog({ open: false, row: null, newStatus: "", oldStatus: "" })
   }
 
+
+
+  // ✅ Handlers
+  const handleSearchEnter = () => {
+    const filters = getValues();
+    setAppliedFilters(prev => ({
+      ...prev,
+      search: filters.search || "",
+      page: 0,
+    }));
+  };
+
+  const handleApplyFilters = () => {
+    const filters = getValues();
+    setAppliedFilters(prev => ({
+      ...prev,
+      search: filters.search || "",
+      status: filters.status || "",
+      page: 0,
+    }));
+  };
+
+  const handleClearFilters = () => {
+    setFormValue("search", "");
+    setFormValue("status", "");
+    setAppliedFilters({
+      page: 0,
+      limit: 5,
+      search: "",
+      status: "",
+    });
+  };
+
+  const handlePageChange = newPage => {
+    setAppliedFilters(prev => ({ ...prev, page: newPage }));
+  };
+
+  const handleRowsPerPageChange = newLimit => {
+    setAppliedFilters(prev => ({ ...prev, limit: newLimit, page: 0 }));
+  };
+
+  
   return (
     <>
       <Grid container spacing={2} marginBottom={'.5rem'}>
-        {/* Filters */}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ backgroundColor: "white", border: "1px solid #e5e7eb" }}>
-            <CardContent>
-              <Grid container spacing={1}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Search by Full Name"
-                    value={searchName}
-                    onChange={e => setSearchName(e.target.value)}
-                    InputProps={{
-                      startAdornment: <SearchIcon sx={{ color: "#4ade80", mr: 1 }} />,
-                    }}
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        "&:hover fieldset": { borderColor: "#4ade80" },
-                        "&.Mui-focused fieldset": { borderColor: "#16a34a" },
-                      },
-                      "& .MuiInputLabel-root.Mui-focused": { color: "#16a34a" },
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel sx={{ "&.Mui-focused": { color: "#16a34a" } }}>
-                      Status Filter
-                    </InputLabel>
-                    <Select
-                      value={statusFilter}
-                      label="Status Filter"
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      sx={{
-                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#4ade80" },
-                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#16a34a" },
-                      }}
-                    >
-                      <MenuItem value="all">All</MenuItem>
-                      <MenuItem value="pending">Pending</MenuItem>
-                      <MenuItem value="approved">Approved</MenuItem>
-                      <MenuItem value="rejected">Rejected</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
 
         {/* Status Cards */}
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <StatusCards statusCounts={statusCounts} total={localData.length} />
-        </Grid>
+        </Grid> */}
 
       {/* Column Visibility Toggle */}
 
-          <Box mt={2}>
-<ColumnVisibilityToggle
-  columns={allColumns}
-  visibility={visibility}
-  setValue={setValue}
-  toggleField={toggleField}
-/>
+<FormProvider {...methods}>
+      <LfaFilters
+        onSearchEnter={handleSearchEnter}
+        onApplyFilters={handleApplyFilters}
+        onClearFilters={handleClearFilters}
+        userCount={localData?.length || 0}
 
-      </Box>
+          columns={allColumns}
+    visibility={visibility}
+    setValues={setValues}
+    toggleField={toggleField}
+      />
+      </FormProvider>
+
+
+
+
+
+
       </Grid>
 
     
-
+{console.log(localData)}
       {/* Table */}
       {lfaLoading ? (
-        <TableSkeleton columns={6} rows={paginatedData?.length} />
+        <TableSkeleton columns={6} rows={localData?.length} />
       ) : (
-        <TableDisplay
-          data={paginatedData}
-                columns={visibleColumns}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          totalCount={filteredData.length}
-          onPageChange={setPage}
-          onRowsPerPageChange={setRowsPerPage}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onAssign={handleAssign}
-          onStatusChange={(row, newStatus) =>
-            setStatusDialog({ open: true, row, newStatus, oldStatus: row.status })
-          }
-          editDeleteBtn={true}
-        />
+  <TableDisplay
+    data={localData}
+          columns={visibleColumns}
+          page={appliedFilters.page}
+          rowsPerPage={appliedFilters.limit}
+          totalCount={lfaData?.data?.total || 0}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
+  onEdit={handleEdit}
+  onDelete={handleDelete}
+  onAssign={handleAssign}
+  onStatusChange={(row, newStatus) =>
+    setStatusDialog({ open: true, row, newStatus, oldStatus: row.status })
+  }
+  editDeleteBtn={true}
+/>
+
       )}
 
       {/* Dialogs */}

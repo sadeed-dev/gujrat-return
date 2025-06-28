@@ -17,7 +17,7 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
     defaultValues
   });
 
-  
+  console.log(defaultValues)
 
   const queryClient = useQueryClient();
   const { user } = useAuth()
@@ -42,6 +42,8 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
       formData.append("state", data.state);
       formData.append("district", data.district);
       formData.append("tehsil", data.tehsil);
+      formData.append("remark", data.remark);
+
 
       if (Array.isArray(data.interestedWork)) {
         data.interestedWork.forEach(work => formData.append("interestedWork", work));
@@ -93,14 +95,17 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
   const panFile = watch("panFile")?.[0];
   const aadhaarFile = watch("aadhaarFile")?.[0];
 
-  useEffect(() => {
+useEffect(() => {
   if (defaultValues && defaultValues._id) {
-    reset(defaultValues); 
+    if (typeof defaultValues.interestedWork === "string") {
+      defaultValues.interestedWork = defaultValues.interestedWork.split(",").map(s => s.trim());
+    }
+    reset(defaultValues);
     setValue("aadhaarFileUrl", defaultValues.aadhaarFile);
     setValue("panFileUrl", defaultValues.panFile);
   }
-  // Only run once when component mounts or defaultValues change meaningfully
 }, [defaultValues?._id]);
+
 
 // useEffect(() => {
 //   if (defaultValues) {
@@ -135,7 +140,7 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
     <section ref={ref} className=" bg-white">
       <div className="max-w-2xl mx-auto  sm:px-6 lg:px-8 shadow-lg rounded-lg " style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
         <h2 className="text-2xl font-bold text-emerald-700 mb-6 text-center">
-          {isEditForm ? 'Edit LFA Application Form' : isViewOnly ? 'View LFA Application Form' : 'LFA Application Form'}
+          {isEditForm ? 'Edit LFA Work Request Form' : isViewOnly ? 'View LFA Work Request Form' : 'LFA Work Request Form'}
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
   
@@ -319,22 +324,49 @@ const LfaApplicationForm = forwardRef(({ defaultValues = {}, onClose, isEditForm
           <div className="md:col-span-2">
             <label className="block font-medium mb-2">Interested Work (Select one or more)</label>
             <div className="flex flex-wrap gap-4">
-              {interestedWorkOptions.map((option) => (
-                <label key={option} className="inline-flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    value={option}
-                    {...register("interestedWork", { required: "Please select at least one option" })}
-                    className="form-checkbox h-5 w-5 text-emerald-600 border border-gray-300-gray-300 rounded focus:ring-emerald-500"
-                    disabled={isViewOnly}
-                    checked={isViewOnly ? isChecked(option) : undefined}
-                    readOnly={isViewOnly}
-                  />
-                  <span className="text-gray-700">{option}</span>
-                </label>
-              ))}
+            {console.log(defaultValues?.interestedWork)}
+{console.log(defaultValues?.interestedWork)}
+
+{interestedWorkOptions.map((option) => {
+const selectedOptions = Array.isArray(defaultValues?.interestedWork)
+  ? defaultValues.interestedWork
+  : (defaultValues?.interestedWork || "").split(",").map(s => s.trim());
+{console.log(selectedOptions)}
+  return (
+    <label key={option} className="inline-flex items-center space-x-2">
+     <input
+      type="checkbox"
+      value={option}
+      {...register("interestedWork", { required: "Please select at least one option" })}
+      className="form-checkbox h-5 w-5 text-emerald-600 border border-gray-300 rounded focus:ring-emerald-500"
+      disabled={isViewOnly}
+      checked={
+        isViewOnly
+          ? selectedOptions.includes(option)
+          : undefined
+      }
+      readOnly={isViewOnly}
+    />
+      <span className="text-gray-700">{option}</span>
+    </label>
+  );
+})}
+
             </div>
             {errors.interestedWork && <span className="text-red-500 text-sm">{errors.interestedWork.message}</span>}
+          </div>
+
+                <div>
+            <label className="block font-medium mb-1">Remark</label>
+            <input
+              {...register("remark")}
+              className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              type="text"
+              placeholder="Enter your work Remark"
+              disabled={isViewOnly}
+              readOnly={isViewOnly}
+            />
+            {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
           </div>
           <div className="md:col-span-2 flex justify-between items-center mt-4">
             {!isViewOnly && (

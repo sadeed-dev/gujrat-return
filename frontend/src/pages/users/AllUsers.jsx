@@ -15,7 +15,9 @@ import { useAuth } from "../../context/auth/AuthContext";
 import { getUserColumns } from "./columns/UserColumns";
 import TableSkeleton from "../../shared/TableSkelton";
 import { useNavigate } from "react-router-dom";
-import UserFilters from "./filters/UserFilter"; // Adjust path as per your structure
+import UserFilters from "./filters/UserFilters";
+import ColumnVisibilityToggle from "../../shared/ColumnVisibilityToggle";
+import useColumnVisibility from "../../hook/use-columnVisibility.hook";
 
 const AllUsers = () => {
   const methods = useForm({
@@ -27,10 +29,16 @@ const AllUsers = () => {
   });
 
   const { getValues, setValue } = methods;
+  const [appliedFilters, setAppliedFilters] = useState({
+    page: 0,
+    limit: 6,
+  });
 
-  const [appliedFilters, setAppliedFilters] = useState({});
-
-  const { data, isLoading } = useGetAllUsers(appliedFilters);
+  const { data, isLoading } = useGetAllUsers({
+    ...appliedFilters,
+    page: appliedFilters.page + 1, // backend expects 1-based page
+    limit: appliedFilters.limit,
+  });
 
   const { mutateAsync: updateUser } = useUpdateUser();
   const { mutateAsync: deleteUser } = useDeleteUser();
@@ -78,13 +86,21 @@ const AllUsers = () => {
   // ✅ Search filter: API call only on Enter
   const handleSearchEnter = () => {
     const filters = getValues();
-    setAppliedFilters(filters);
+    setAppliedFilters({
+      ...filters,
+      page: 0,
+      limit: appliedFilters.limit,
+    });
   };
 
   // ✅ Role & Status filters: API call only on Apply Filters button
   const handleApplyFilters = () => {
     const filters = getValues();
-    setAppliedFilters(filters);
+    setAppliedFilters({
+      ...filters,
+      page: 0,
+      limit: appliedFilters.limit,
+    });
   };
 
   // ✅ Clear All: reset form and refetch unfiltered data
@@ -92,7 +108,26 @@ const AllUsers = () => {
     setValue("search", "");
     setValue("role", "");
     setValue("status", "");
-    setAppliedFilters({});
+    setAppliedFilters({
+      page: 0,
+      limit: 10,
+    });
+  };
+
+  // 📝 Pagination change handlers
+  const handlePageChange = (newPage) => {
+    setAppliedFilters((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  const handleRowsPerPageChange = (newLimit) => {
+    setAppliedFilters((prev) => ({
+      ...prev,
+      limit: newLimit,
+      page: 0, // reset page when limit changes
+    }));
   };
 
   const columns = getUserColumns({
@@ -103,26 +138,38 @@ const AllUsers = () => {
     useUpdateUserStatus,
   });
 
+  const {
+    visibility,
+    setValue: setValues,
+    toggleField,
+  } = useColumnVisibility(columns, "taskTable");
+  const visibleColumns = columns.filter(
+    (col) => visibility[col.field] !== false
+  );
+{console.log(data)}
   return (
     <FormProvider {...methods}>
       <UserFilters
         onSearchEnter={handleSearchEnter}
         onApplyFilters={handleApplyFilters}
         onClearFilters={handleClearFilters}
-        userCount={data?.data?.length || 0}
+        userCount={data?.total || 0}
+        columns={columns}
+        visibility={visibility}
+        setValues={setValues}
+        toggleField={toggleField}
       />
-
       {isLoading ? (
         <TableSkeleton columns={columns.length} rows={8} />
       ) : (
         <DataTable
           data={data?.data || []}
-          columns={columns}
-          page={0}
-          rowsPerPage={100}
-          totalCount={data?.length || 0}
-          onPageChange={() => {}}
-          onRowsPerPageChange={() => {}}
+          columns={visibleColumns}
+          page={appliedFilters.page}
+          rowsPerPage={appliedFilters.limit}
+          totalCount={data?.total || 0}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
           onEdit={handleEdit}
           onDelete={handleDelete}
           editDeleteBtn={true}

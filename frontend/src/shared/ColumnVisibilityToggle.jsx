@@ -101,68 +101,74 @@ const ColumnVisibilityToggle = ({ columns, visibility, setValue ,toggleField}) =
 
       </Tooltip>
 
-      <Popper open={open} anchorEl={anchorEl} placement="bottom-start" style={{ zIndex: 1300 }}>
-        <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
-          <Paper sx={{ width: 260, maxHeight: 400, overflow: "auto", p: 1 }}>
-            <TextField
-              placeholder="Search columns"
-              fullWidth
-              size="small"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 1 }}
-            />
-            <MenuList dense>
-              {filteredColumns.map((col) => (
-                <MenuItem key={col.field} disableGutters>
-                  <Checkbox
-                    size="small"
-                    checked={visibility[col.field] !== false}
-          onChange={() => toggleField(col.field)}
-                  />
-                  <Typography variant="body2">{col.headerName}</Typography>
-                </MenuItem>
-              ))}
-              <Box display="flex" justifyContent="space-between" px={1} mt={1}>
-<Button 
-  size="small" 
-  variant="outlined" 
-  onClick={handleShowAll}
-  sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
->
-  Show All
-</Button>
+    <Popper open={open} anchorEl={anchorEl} placement="bottom-start" style={{ zIndex: 1300 }}>
+  <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
+    <Paper sx={{ width: 260, maxHeight: 400, p: 1, display: 'flex', flexDirection: 'column' }}>
+      <TextField
+        placeholder="Search columns"
+        fullWidth
+        size="small"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchIcon fontSize="small" />
+            </InputAdornment>
+          ),
+        }}
+        sx={{ mb: 1 }}
+      />
 
-<Button 
-  size="small" 
-  variant="outlined" 
-  onClick={handleHideAll}
-  sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
->
-  Hide All
-</Button>
+      {/* Scrollable columns list */}
+      <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
+        <MenuList dense>
+          {filteredColumns.map((col) => (
+            <MenuItem key={col.field} disableGutters>
+              <Checkbox
+                size="small"
+                checked={visibility[col.field] !== false}
+                onChange={() => toggleField(col.field)}
+              />
+              <Typography variant="body2">{col.headerName}</Typography>
+            </MenuItem>
+          ))}
+        </MenuList>
+      </Box>
 
+      {/* Fixed action buttons */}
+      <Box display="flex" justifyContent="space-between" px={1} mt={1}>
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={handleShowAll}
+          sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
+        >
+          Show All
+        </Button>
 
-<Button 
-  size="small" 
-  variant="contained" 
-  onClick={handleReset}
-  sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
->
-  Reset
-</Button>
-              </Box>
-            </MenuList>
-          </Paper>
-        </ClickAwayListener>
-      </Popper>
+        <Button
+          size="small"
+          variant="outlined"
+          onClick={handleHideAll}
+          sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
+        >
+          Hide All
+        </Button>
+
+        <Button
+          size="small"
+          variant="contained"
+          onClick={handleReset}
+          sx={{ fontSize: '0.65rem', padding: '2px 6px', fontWeight: 'bold' }}
+        >
+          Reset
+        </Button>
+      </Box>
+    </Paper>
+  </ClickAwayListener>
+</Popper>
+
     </Box>
   );
 }

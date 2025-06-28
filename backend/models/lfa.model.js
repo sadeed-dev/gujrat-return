@@ -86,6 +86,9 @@ assignment: {
   },
   assignedAt: Date,
 },
+remark: {
+  type: String,
+},
  isDeleted: {
     type: Boolean,
     default: false, 

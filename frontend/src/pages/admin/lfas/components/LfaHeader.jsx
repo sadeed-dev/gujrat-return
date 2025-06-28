@@ -4,7 +4,7 @@ import { Box, Typography, Button } from "@mui/material"
 
 const LfaHeader = ({ activeView, setActiveView, chatCount }) => {
   return (
-    <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+    <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
       <Typography variant="h4" component="h1" fontWeight={500} sx={{ color: "#16a34a" }}>
         LFA Management System
       </Typography>

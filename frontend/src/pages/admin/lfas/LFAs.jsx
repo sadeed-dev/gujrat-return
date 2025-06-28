@@ -849,6 +849,7 @@ import LfaTable from "./components/LfaTable"
 const LFAs = () => {
   const { user } = useAuth()
   const { data, isLoading: lfaLoading, refetch } = useGetAllLFAs()
+
   const { data: usersList } = useGetAllUsers()
   const location = useLocation()
 
@@ -874,9 +875,7 @@ const LFAs = () => {
 
       {activeView === "table" ? (
         <LfaTable
-          lfaData={data}
           usersList={usersList}
-          lfaLoading={lfaLoading}
           chatRooms={chatRooms}
           refetch={refetch}
           setActiveView={setActiveView}

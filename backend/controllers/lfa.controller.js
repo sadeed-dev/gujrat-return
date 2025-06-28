@@ -18,10 +18,10 @@ export const submitLFAForm = async (req, res) => {
 export const getAllLFA = async (req, res) => {
   try {
     const { role, id: userId } = req.user;
-
-    const result = await handleGetAllLFA(role, userId);
-
-    res.status(200).json(result);
+    const filters = req.query; 
+    // Call service function
+    const lfas = await handleGetAllLFA(role, userId, filters);
+    res.status(200).json({ message: 'getting Lfa successful', data: lfas });
   } catch (error) {
     res.status(500).json({ message: "Failed to get LFA Applications", error: error.message });
   }

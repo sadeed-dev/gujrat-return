@@ -3,14 +3,20 @@ import useMutate from './use-mutate.hook';
 import { useQueryClient } from '@tanstack/react-query';
 
 
-export const useGetAllLFAs = () => {
+export const useGetAllLFAs = (filters = {}) => {
+    const params = new URLSearchParams(filters).toString();
+
   return useFetch({
-    queryKey: ['all-LFAs'],
-    api: 'lfa',
+    queryKey: ['all-LFAs', filters],
+    api: `lfa?${params}`,
     auth: true,
     backend: true,
   });
 };
+
+
+
+
 
 
 export const useGetLFAs = (lfaId) => {

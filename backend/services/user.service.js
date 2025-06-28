@@ -2,31 +2,45 @@ import User from '../models/user.model.js';
 import { uploadFileToS3 } from './s3.service.js';
 
 export const handleGetAllUsers = async (filters) => {
-
   const query = {
     isDeleted: { $ne: true },
     status: { $ne: "rejected" },
   };
 
-  if(filters.search){
+  if (filters.search) {
     query.$or = [
-      { name : {$regex: filters.search, $options:'i'}},
-      { email : { $regex: filters.search, $options:'i'}}
-    ]
-  }  
-  // Apply Role Filter
+      { name: { $regex: filters.search, $options: 'i' } },
+      { email: { $regex: filters.search, $options: 'i' } }
+    ];
+  }
+
   if (filters.role) {
     query.role = filters.role;
   }
 
-  // Apply Approval Status Filter
   if (filters.status) {
     query.status = filters.status;
   }
 
-  const users = await User.find(query).select("-password");
-  return users;
+  const page = parseInt(filters.page) || 1;
+  const limit = parseInt(filters.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    User.find(query).select("-password").skip(skip).limit(limit),
+    User.countDocuments(query),
+  ]);
+
+  return {
+    users: data,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 };
+
+
 
 
 

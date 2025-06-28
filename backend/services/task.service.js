@@ -112,7 +112,7 @@ export const handleReviewCompletedTask = async (lfaId) => {
 
 export const handlegetAllCompletedTask = async () => {
   try {
-    const tasks = await Task.find(); 
+    const tasks = await Task.find().sort({ createdAt: -1 });
 
     if (!tasks || tasks.length === 0) {
       return {
@@ -122,7 +122,6 @@ export const handlegetAllCompletedTask = async () => {
     }
 
     return tasks
-    
   } catch (error) {
     throw new Error("Failed to fetch submitted tasks: " + error.message);
   }

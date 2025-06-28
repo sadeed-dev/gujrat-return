@@ -14,7 +14,7 @@ const SendOfferDialog = ({ open, onClose, allUsers, onSubmit, selectedLFA, isPen
   const { user: currentUser } = useAuth()
   const { isSubmitting } = formState;
 
-  const fetchSameRegionUsers = allUsers?.data?.filter(user =>
+  const fetchSameRegionUsers = allUsers?.data?.data?.filter(user =>
     user?.tehsil?.toLowerCase() === selectedLFA?.tehsil?.toLowerCase() &&
     user?.district?.toLowerCase() === selectedLFA?.district?.toLowerCase() &&
     user?.role !== "ADMIN"

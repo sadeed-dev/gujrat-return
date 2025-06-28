@@ -6,10 +6,21 @@ export const getAllUsers = async (req, res) => {
       search: req.query.search || "",
       role: req.query.role || "",
       status: req.query.status || "",
+      page: parseInt(req.query.page) || 1,
+      limit: parseInt(req.query.limit) || 10,
     };
 
-    const users = await handleGetAllUsers(filters);
-    res.status(201).json({ message: 'Users getting successfull', data: users });
+    const { users, total, page, limit, totalPages } = await handleGetAllUsers(filters);
+
+    res.status(200).json({
+      message: 'Users getting successful',
+      data: users,        // only the user array here
+      total,
+      page,
+      limit,
+      totalPages
+    });
+
   } catch (error) {
     console.error('Failed getting Users:', error);
     res.status(500).json({ message: 'Failed getting Users', error: error.message });

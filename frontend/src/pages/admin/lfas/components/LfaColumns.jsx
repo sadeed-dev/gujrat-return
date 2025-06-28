@@ -47,10 +47,39 @@ export const getLfaTableColumns = ({
         params.row?.interestedWork && (
           <Chip
             label={params.row.interestedWork}
-            sx={{
-              backgroundColor: "oklch(75% 0.145 163.225)",
-              color: "#ffffff",
-            }}
+            s sx={{
+    backgroundColor: '#0d9488',
+    color: '#fff',
+    px: 1,
+    py: 0.5,
+    borderRadius: '999px',
+    fontSize: '0.75rem',
+    fontWeight: 500,
+    display: 'inline-block'
+  }}
+            size="small"
+          />
+        ),
+    },
+      {
+      field: "remark",
+      headerName: "Remark",
+      minWidth: 150,
+      align: "center",
+      renderCell: (params) =>
+        params.row?.remark && (
+          <Chip
+            label={params.row.remark}
+            s sx={{
+    backgroundColor: '#e5e7eb',
+    color: '#374151',
+    px: 1,
+    py: 0.5,
+    borderRadius: '999px',
+    fontSize: '0.75rem',
+    fontWeight: 500,
+    display: 'inline-block'
+  }}
             size="small"
           />
         ),

@@ -154,11 +154,11 @@ const TaskUploadForm = ({ row, taskData, onClose, isViewMode }) => {
       toast.error(error.message);
     }
   };
-  setValue("interestedWork", row?.interestedWork.split(" ") || []);
+  console.log(row.interestedWork)
 
+  setValue("interestedWork", row?.interestedWork || []);
 
   const workArray = row?.interestedWork
-    ?.split(",")
     .map(item => item.trim())
     .filter(Boolean) || [];
 

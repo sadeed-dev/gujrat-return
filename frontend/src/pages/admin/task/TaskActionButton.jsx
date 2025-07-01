@@ -21,7 +21,6 @@ const TaskActionButton = ({ row }) => {
 
 
   const hasTask = allTasks?.data?.some(task => task.lfaId === row.lfaId);
-
   const navigate = useNavigate();
   const query = useQuery();
   const lfaIdFromUrl = query.get("lfaId");

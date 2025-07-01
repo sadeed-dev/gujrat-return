@@ -1,7 +1,7 @@
 import { LFA } from '../models/lfa.model.js';
 import User from '../models/user.model.js';
 import { uploadFileToS3 } from './s3.service.js';
-
+import Task from '../models/task.model.js'
 import Notification from '../models/notifications.model.js';
 import { sendNotificationToAdmins , sendNotificationToUser} from '../sockets/index.js';
 import { sendMail } from '../utils/mail.utils.js';
@@ -317,20 +317,74 @@ export const handleGetAssignedLFAs = async (userId) => {
 
 
 // Get all assigned LFAs, regardless of who they were assigned to
-export const handleGetAllAssignedLFAs = async (user) => {
-  if(user.role === 'ADMIN'){
-  // Admin sees all LFAs
-  const getAllassignedLFAs = await LFA.find({ 'assignment.assignedTo': { $exists: true } });
-  return getAllassignedLFAs;  
-  }else{
-     const assignedLFAs = await LFA.find({ 'assignment.assignedTo._id': user._id });
-  return assignedLFAs;
+
+
+export const handleGetAllAssignedLFAs = async (user, filters = {}) => {
+  const {
+    search = "",
+    status = "",
+    taskStatus = "", // ✅ new filter field for task status
+    page = 1,
+    limit = 10,
+  } = filters;
+
+  const query = {
+    'assignment.assignedTo': { $exists: true },
+  };
+
+  if (user.role !== 'ADMIN') {
+    query['assignment.assignedTo._id'] = user._id;
   }
 
+  if (search) {
+    query.$or = [
+      { lfaId: { $regex: search, $options: "i" } },
+      { interestedWork: { $regex: search, $options: "i" } },
+      { remark: { $regex: search, $options: "i" } },
 
-  
+    ];
+  }
 
+  if (status) {
+    query.status = status;
+  }
+
+  // ✅ Task submission filter logic
+  if (taskStatus) {
+    // Fetch all task lfaIds once for filtering
+    const tasks = await Task.find().select("lfaId");
+    const taskLfaIds = tasks.map(task => task.lfaId.toString());
+
+    if (taskStatus === "submitted") {
+      // Only LFAs having submitted task
+      query.lfaId = { $in: taskLfaIds };
+    } else if (taskStatus === "notSubmitted") {
+      // Only LFAs without submitted task
+      query.lfaId = { $nin: taskLfaIds };
+    }
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    LFA.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit)),
+    LFA.countDocuments(query),
+  ]);
+
+  return {
+    data,
+    total,
+    page: parseInt(page),
+    limit: parseInt(limit),
+    totalPages: Math.ceil(total / limit),
+  };
 };
+
+
+
 
 
 

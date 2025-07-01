@@ -1,38 +1,43 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef,  } from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
-import { LogOut, Menu, X, ChevronDown, ChevronUp, Coins , User} from "lucide-react"
-import React from 'react'
-import { toast } from "sonner"
-import { useAuth } from "../context/auth/AuthContext"
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LogOut, Menu, X, ChevronDown, ChevronUp, User } from "lucide-react";
+import React from "react";
+import { toast } from "sonner";
+import { useAuth } from "../context/auth/AuthContext";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const location = useLocation()
-  const dropdownRef = useRef(null)
-  const navigate  =  useNavigate()
+  const [isOpen, setIsOpen] = useState(false);
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const location = useLocation();
+  const desktopDropdownRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
+  const navigate = useNavigate();
 
-  const {user,setUser } = useAuth()
+  const { user, setUser } = useAuth();
 
-
-  const toggleMenu = () => {  
-    setIsOpen(!isOpen)  
-  }
+  const toggleMenu = () => setIsOpen(!isOpen);
 
   const handleLogout = () => {
-    localStorage.removeItem('user')
-    setUser(null)
-    navigate('/')
-    toast.success("Logout successfully")
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
+    toast.success("Logout successfully");
+  };
 
-  }
+  const handleProfileRedirect = () => {
+    if (!user) return;
 
-
-  // const token = localStorage.getItem('auth')
-  // const loginUser = localStorage.getItem('login-user')
-
+    if (user.role === "ADMIN") {
+      navigate("/admin/dashBoard");
+    } else if (user.role === "USER") {
+      navigate("/admin/lfas");
+    } else {
+      navigate("/");
+    }
+  };
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -43,40 +48,28 @@ const Navbar = () => {
     { name: "Services", path: "/services" },
     { name: "FAQs", path: "/faq" },
     { name: "Contact", path: "/contact" },
-  ]
-
-
-
-  const handleProfileRedirect = () => {
-    if (!user) return;
-
-    if (user.role === "ADMIN") {
-      navigate("/admin/dashBoard");
-    } else if (user.role === "USER") {
-      navigate("/admin/lfas");
-    } else {
-      navigate("/"); // fallback if no recognized role
-    }
-  };
+  ];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false)
+      if (desktopDropdownRef.current && !desktopDropdownRef.current.contains(event.target)) {
+        setDesktopDropdownOpen(false);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
+        setMobileDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto py-1">
         <div className="flex justify-between h-16">
+          {/* Logo */}
           <div className="flex items-center">
-            <img src='/assets/logo.jpeg' className="w-20 h-20 object-contain p-1" alt="logo" loading="lazy" />
+            <img src="/assets/logo.jpeg" className="w-20 h-20 object-contain p-1" alt="logo" loading="lazy" />
             <Link to="/" className="flex-shrink-0 flex items-center ml-2">
               <span className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 drop-shadow-md tracking-wide animate-pulse">
                 Rural Connect
@@ -101,29 +94,32 @@ const Navbar = () => {
             ))}
 
             {user ? (
-              <div className="relative" ref={dropdownRef}>
+              <div className="relative" ref={desktopDropdownRef}>
                 <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
                   className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-semibold text-gray-700 hover:text-emerald-600 hover:bg-gray-100 transition-all duration-150 cursor-pointer"
                 >
                   <span className="capitalize">{user.name}</span>
-                  {dropdownOpen ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
+                  {desktopDropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </button>
-                {dropdownOpen && (
-                  <div className="absolute right-[-1.8rem] mt-2 w-40 bg-white border border-gray-200 shadow-lg rounded-md z-50">
-                          <button
-            onClick={handleProfileRedirect}
-            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-2 cursor-pointer"
-          >
-            <User className="w-4 h-4" /> Profile
-          </button>
-                  
-                     <button
-                      onClick={handleLogout}
+
+                {desktopDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-lg rounded-md z-50">
+                    <button
+                      onClick={() => {
+                        handleProfileRedirect();
+                        setDesktopDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-2 cursor-pointer"
+                    >
+                      <User className="w-4 h-4" /> Profile
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setDesktopDropdownOpen(false);
+                      }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 flex items-center gap-2 cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" /> Logout
@@ -171,16 +167,43 @@ const Navbar = () => {
             </Link>
           ))}
 
-          {user   ? (
-            <button
-              onClick={() => {
-                setIsOpen(false)
-                handleLogout()
-              }}
-              className="block w-full text-right px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 cursor-pointer"
-            >
-              Logout
-            </button>
+          {user ? (
+            <div className="relative" ref={mobileDropdownRef}>
+              <button
+                onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
+                className="flex items-center gap-1 w-full px-3 py-2 rounded-md text-base font-semibold text-gray-700 hover:text-emerald-600 hover:bg-gray-100 transition-all duration-150 cursor-pointer"
+              >
+                <span className="capitalize">{user.name}</span>
+                {mobileDropdownOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+
+             {mobileDropdownOpen && (
+  <div className="mt-1 bg-white border border-gray-200 shadow-md rounded-md">
+    <button
+      onClick={() => {
+        handleProfileRedirect();
+        setMobileDropdownOpen(false);
+        setIsOpen(false);
+      }}
+      className="flex cursor-pointer items-center gap-2 w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-t-md"
+    >
+      <User className="w-5 h-5" /> Profile
+    </button>
+
+    <button
+      onClick={() => {
+        handleLogout();
+        setMobileDropdownOpen(false);
+        setIsOpen(false);
+      }}
+      className="flex cursor-pointer items-center gap-2 w-full px-4 py-3 text-left text-base font-medium text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-b-md"
+    >
+      <LogOut className="w-5 h-5" /> Logout
+    </button>
+  </div>
+)}
+
+            </div>
           ) : (
             <Link
               to="/login"
@@ -193,7 +216,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

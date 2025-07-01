@@ -1,12 +1,12 @@
 import { Chip, Box, Tooltip, IconButton } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Visibility as VisibilityIcon } from "@mui/icons-material";
+import { Padding, Visibility as VisibilityIcon } from "@mui/icons-material";
 import { EditIcon } from "lucide-react";
 import StatusActions from "../../admin/task/StatusActions";
 
 export  function getUserColumns({ user, handleEdit,handleView, handleDelete, useUpdateUserStatus }) {
   return [
-    { field: "serial", headerName: "S.No.", type: "serial", minWidth: 40, align: "center" },
+    { field: "serial", headerName: "S.No.", type: "serial", minWidth: 40, align: "center",Padding:'5rem'},
     { field: "name", headerName: "Full Name", minWidth: 150, align: "center" },
     { field: "email", headerName: "Email", minWidth: 180, align: "center" },
     {

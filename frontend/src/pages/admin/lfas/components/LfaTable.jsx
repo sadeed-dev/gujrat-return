@@ -10,7 +10,9 @@ import {
   InputLabel,
   FormControl,
   Select,
-  MenuItem
+  MenuItem,
+  IconButton,
+  useMediaQuery
 } from "@mui/material"
 import SearchIcon from "@mui/icons-material/Search"
 import StatusCards from "./StatusCards"
@@ -30,6 +32,7 @@ import useColumnVisibility from "../../../../hook/use-columnVisibility.hook"
 import { FormProvider, useForm } from "react-hook-form"
 import LfaFilters from "../filter/LfaFilters"
 import ColumnVisibilityToggle from "../../../../shared/ColumnVisibilityToggle"
+import FilterListIcon from "@mui/icons-material/FilterList";
 
 
 const LfaTable = ({ usersList = [],chatRooms, refetch, setActiveView,
@@ -39,6 +42,8 @@ const LfaTable = ({ usersList = [],chatRooms, refetch, setActiveView,
   
   const { mutate: createChatRoom, isPending} = useCreateChatRoom();
 
+  const isMobile = useMediaQuery("(max-width:600px)");
+const [showFilters, setShowFilters] = useState(false);
 
   const { user } = useAuth()
   const [assignDialog, setAssignDialog] = useState({ open: false, row: null })
@@ -230,7 +235,19 @@ Message: ${offerData?.message || "(No message)"}`
 
       {/* Column Visibility Toggle */}
 
+    {isMobile && (
+      <IconButton
+        onClick={() => setShowFilters((prev) => !prev)}
+        sx={{ color: "#16a34a" }}
+      >
+        <FilterListIcon />
+      </IconButton>
+    )}
+
+        {(!isMobile || showFilters) && (
+
 <FormProvider {...methods}>
+
       <LfaFilters
         onSearchEnter={handleSearchEnter}
         onApplyFilters={handleApplyFilters}
@@ -243,6 +260,7 @@ Message: ${offerData?.message || "(No message)"}`
     toggleField={toggleField}
       />
       </FormProvider>
+  )}
 
 
 

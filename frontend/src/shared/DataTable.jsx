@@ -203,7 +203,7 @@ const DataTable = ({
                   key={column.field}
                   align={column.align || "center"}
                   sx={{
-                    backgroundColor: "oklch(85% 0.15 163.223)",
+                  backgroundColor: "oklch(85% 0.15 163.223)",
                     color: "white",
                     fontWeight: 600,
                     minWidth: column.minWidth || 100,

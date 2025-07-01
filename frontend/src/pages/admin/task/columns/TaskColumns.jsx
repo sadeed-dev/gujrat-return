@@ -7,6 +7,7 @@ import StatusActions from '../StatusActions';
 import TaskActionButton from '../TaskActionButton';
 import { useAuth } from '../../../../context/auth/AuthContext';
 import { useUpdateLfaStatus } from '../../../../hook/use-Lfa.hook';
+import { formatDateTime } from '../../../../utils/dateUtils';
 
 const TaskColumns = (handleView) => {
   const { user } = useAuth();
@@ -32,10 +33,50 @@ const TaskColumns = (handleView) => {
         ),
     },
 
-    { field: "assignedBy", headerName: "Assigned By", minWidth: 150, align: "center" },
-    { field: "assignedTo", headerName: "Assigned To", minWidth: 150, align: "center" },
+{
+  field: "assignedTo",
+  headerName: "Assigned To",
+  minWidth: 180,
+  align: "center",
+  renderCell: (params) => (
+    <span>
+      {params?.row?.assignment?.assignedTo?.name || "-"}
+    </span>
+  ),
+},
+{
+  field: "assignedBy",
+  headerName: "Assigned By",
+  minWidth: 180,
+  align: "center",
+  renderCell: (params) => (
+    <span>
+      {params?.row?.assignment?.assignedBy?.name || "-"}
+    </span>
+  ),
+},
 
-    {
+{
+  field: "assignedDate",
+  headerName: "Assigned Date",
+  minWidth: 180,
+  align: "center",
+  renderCell: (params) => (
+    <span>
+{
+  params?.row?.assignment?.assignedAt
+    ? new Date(params.row.assignment.assignedAt).toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
+    : "-"
+}
+
+    </span>
+  ),
+},
+ {
       field: "interestedWork",
       headerName: "Interested Work",
       minWidth: 180,
@@ -44,14 +85,21 @@ const TaskColumns = (handleView) => {
         params.row?.interestedWork && (
           <Chip
             label={params.row.interestedWork}
-            sx={{
-              backgroundColor: "#0d9488",
-              color: "#ffffff",
-            }}
+             sx={{
+    backgroundColor: '#0d9488',
+    color: '#fff',
+    px: 1,
+    py: 0.5,
+    borderRadius: '999px',
+    fontSize: '0.75rem',
+    fontWeight: 500,
+    display: 'inline-block'
+  }}
             size="small"
           />
         ),
     },
+
       {
       field: "remark",
       headerName: "Remark",
@@ -77,7 +125,6 @@ const TaskColumns = (handleView) => {
     },
     { field: "name", headerName: "Name", minWidth: 150, align: "center" },
     { field: "mobileNumber", headerName: "Number", minWidth: 150, align: "center" },
-    { field: "assignedDate", headerName: "Assigned Date", minWidth: 160, align: "center" },
     { field: "state", headerName: "State", minWidth: 120, align: "center" },
     { field: "district", headerName: "District", minWidth: 120, align: "center" },
     { field: "tehsil", headerName: "Tehsil", minWidth: 10, align: "center" },

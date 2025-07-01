@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import DataTable from "../../shared/DataTable";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, IconButton, Typography, useMediaQuery } from "@mui/material";
 import UserEditForm from "./dialog/UserEditForm";
+import FilterListIcon from "@mui/icons-material/FilterList";
+
 import {
   useGetAllUsers,
   useUpdateUser,
@@ -18,7 +20,7 @@ import { useNavigate } from "react-router-dom";
 import UserFilters from "./filters/UserFilters";
 import ColumnVisibilityToggle from "../../shared/ColumnVisibilityToggle";
 import useColumnVisibility from "../../hook/use-columnVisibility.hook";
-
+import { Box } from "@mui/material";
 const AllUsers = () => {
   const methods = useForm({
     defaultValues: {
@@ -47,6 +49,8 @@ const AllUsers = () => {
   const [editRow, setEditRow] = useState(null);
   const navigate = useNavigate();
 
+  const isMobile = useMediaQuery("(max-width:600px)");
+const [showFilters, setShowFilters] = useState(false);
   const handleUserEditFormSubmit = async (data) => {
     const formData = new FormData();
     formData.append("name", data.name);
@@ -148,6 +152,35 @@ const AllUsers = () => {
   );
 {console.log(data)}
   return (
+
+        <Box sx={{ backgroundColor: "#f9fafb", minHeight: "100vh",paddingRight:3, }}>
+        <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      mb: 2,
+    }}
+  >
+    <Typography
+      variant="h6" // Changed from h4 to h6 to decrease size
+      fontWeight={500}
+      sx={{ color: "#16a34a", fontSize: isMobile ? "18px" : "24px" }} // further control size
+    >
+      All Registered Users
+    </Typography>
+    
+    {isMobile && (
+      <IconButton
+        onClick={() => setShowFilters((prev) => !prev)}
+        sx={{ color: "#16a34a" }}
+      >
+        <FilterListIcon />
+      </IconButton>
+    )}
+  </Box>
+  {(!isMobile || showFilters) && (
+
     <FormProvider {...methods}>
       <UserFilters
         onSearchEnter={handleSearchEnter}
@@ -159,6 +192,11 @@ const AllUsers = () => {
         setValues={setValues}
         toggleField={toggleField}
       />
+
+    </FormProvider>
+        )}
+
+
       {isLoading ? (
         <TableSkeleton columns={columns.length} rows={8} />
       ) : (
@@ -191,7 +229,7 @@ const AllUsers = () => {
           />
         </DialogContent>
       </Dialog>
-    </FormProvider>
+    </Box>
   );
 };
 

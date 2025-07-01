@@ -98,10 +98,10 @@ const isActive = (href) => {
             </div>
             <nav className="mt-5 space-y-1 px-2">
               {navigation.map((item,i) => (
-                
                 <Link
                   key={i}
                   to={item.href}
+                  onClick={() => setSidebarOpen(false)}
                   className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${isActive(item.href)
                     ? "bg-[oklch(0.95_0.05_160deg)] text-[oklch(0.7_0.15_160deg)]"
                     : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"

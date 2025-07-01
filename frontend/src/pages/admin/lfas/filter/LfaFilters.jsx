@@ -2,6 +2,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 import { Search, Filter, Users, CheckCircle } from "lucide-react";
 import ColumnVisibilityToggle from "../../../../shared/ColumnVisibilityToggle";
+import { useAuth } from "../../../../context/auth/AuthContext";
 
 const LfaFilters = ({
   onSearchEnter,
@@ -12,9 +13,10 @@ const LfaFilters = ({
   visibility,
   setValues,
   toggleField,
+  isFilterVisible,
 }) => {
   const { register, watch } = useFormContext();
-
+  const { user } = useAuth()
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter") {
       onSearchEnter(watch("search"));
@@ -32,12 +34,12 @@ const LfaFilters = ({
           <div className="flex flex-wrap items-end gap-4 flex-1">
             {/* Search Filter */}
             <div className="relative">
-              <label className="block text-sm font-medium text-emerald-700 mb-2">Search Users</label>
+              <label className="block text-sm font-medium text-emerald-700 mb-2">{!isFilterVisible ? "Search LFA" : "Search Work"}</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-emerald-500" />
                 <input
                   type="text"
-                  placeholder="Search by Lfa ID, name..."
+                  placeholder= {isFilterVisible ?  "Search by ID, work, remark..." :"Search by Lfa ID, name..." } 
                   {...register("search")}
                   onKeyDown={handleSearchKeyDown}
                   className="w-full pl-7 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-emerald-50/30"
@@ -46,9 +48,11 @@ const LfaFilters = ({
             </div>
 
             {/* Approval Status Filter */}
-            <div>
+             {user.role === "ADMIN" && (
+                      <div>
               <label className="block text-sm font-medium text-emerald-700 mb-2">Approval Status</label>
               <div className="relative">
+              
                 <select
                   {...register("status")}
                   className="w-full pl-10 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-emerald-50/30 appearance-none cursor-pointer"
@@ -61,6 +65,30 @@ const LfaFilters = ({
                 <CheckCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-emerald-500" />
               </div>
             </div>
+             )}
+{console.log(isFilterVisible)}
+
+                         {/* Approval Status Filter */}
+             {(isFilterVisible) &&(
+                      <div>
+              <label className="block text-sm font-medium text-emerald-700 mb-2">Task Status</label>
+              <div className="relative">
+              
+                <select
+                  {...register("taskStatus")}
+                  className="w-full pl-10 pr-4 py-3 border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-emerald-50/30 appearance-none cursor-pointer"
+                >
+                  <option value="">All Tasks</option>
+                                    <option value="submitted">Submitted</option>
+                  <option value="notSubmitted">Not Submitted</option>
+                </select>
+                <CheckCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-emerald-500" />
+              </div>
+            </div>
+             )}
+
+
+
 
             {/* Apply & Clear Buttons */}
             <div className="flex items-center gap-2 mt-6">

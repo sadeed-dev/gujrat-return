@@ -28,10 +28,15 @@ export const useGetLFAs = (lfaId) => {
   });
 };
 
-export const useGetAssignedLFAs = () => {
+
+
+
+export const useGetAssignedLFAs = (filters = {}) => {
+      const params = new URLSearchParams(filters).toString();
+
   return useFetch({
-    queryKey: ['assign-lfa-list'],
-    api: 'lfa/assigned-lfa-list',
+    queryKey: ['assign-lfa-list',filters],
+    api: `lfa/assigned-lfa-list?${params}`,
     auth: true,
     backend: true,
   });

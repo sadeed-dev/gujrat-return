@@ -86,12 +86,12 @@ export const getAssignedLFAs = async (req, res) => {
 export const getAllAssignedLFAs = async (req, res) => {
   try {
         const user = req.user; // Automatically available via authMiddleware
-
-    const assignedLFAs =  await handleGetAllAssignedLFAs(user);
+     const filters = req.query
+    const assignedLFAs =  await handleGetAllAssignedLFAs(user,filters);
 
     res.status(200).json({
       message: 'Assigned tasks fetched successfully',
-      data: assignedLFAs,
+     ...assignedLFAs
     });
   } catch (error) {
     res.status(500).json({
